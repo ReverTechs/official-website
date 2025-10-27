@@ -16,8 +16,10 @@ import { useEffect, useState } from "react";
 export function ProfileAvatar() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     async function getUser() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -32,6 +34,13 @@ export function ProfileAvatar() {
     await supabase.auth.signOut();
     window.location.href = '/';
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-lg" />
+    );
+  }
 
   return (
     <DropdownMenu>
