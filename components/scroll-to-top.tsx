@@ -71,23 +71,23 @@ export function ScrollToTop() {
       </div>
 
       {/* Scroll to Top Button */}
-      <button
-        onClick={scrollToTop}
+      <div
         className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         }`}
-        aria-label="Scroll to top"
       >
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-50 animate-pulse" />
           <Button
+            onClick={scrollToTop}
             size="icon"
             className="relative w-14 h-14 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-transform duration-200"
+            aria-label="Scroll to top"
           >
             <ArrowUp className="h-6 w-6" />
           </Button>
         </div>
-      </button>
+      </div>
     </>
   );
 }
