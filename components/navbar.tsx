@@ -5,10 +5,12 @@ import Link from "next/link";
 import { ThemeSwitcher } from "./theme-switcher";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileAvatar } from "./profile-avatar";
-import { Home, Info, AppWindow, Mail } from "lucide-react";
+import { Home, Info, AppWindow, Mail, Shield } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +19,24 @@ export function Navbar() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    async function loadRole() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      setIsAdmin(data?.role === "admin");
+    }
+    loadRole();
   }, []);
 
   return (
@@ -42,6 +62,15 @@ export function Navbar() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
+            {isAdmin && (
+              <Link 
+                href="/admin" 
+                className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 flex items-center gap-1.5 group"
+              >
+                <Shield className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span>Admin</span>
+              </Link>
+            )}
             <Link 
               href="#about" 
               className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 flex items-center gap-1.5 group"

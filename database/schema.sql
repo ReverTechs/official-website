@@ -61,29 +61,49 @@ CREATE POLICY "Users can view own profile" ON users
 CREATE POLICY "Users can update own profile" ON users
   FOR UPDATE USING (auth.uid() = id);
 
--- RLS Policies for site_content (public read, authenticated write)
+-- RLS Policies for site_content (public read, admin write)
 CREATE POLICY "Anyone can view site content" ON site_content
   FOR SELECT USING (true);
 
-CREATE POLICY "Any authenticated user can modify site content" ON site_content
-  FOR ALL USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Only admins can modify site content" ON site_content
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM users 
+      WHERE users.id = auth.uid() AND users.role = 'admin'
+    )
+  );
 
--- RLS Policies for apps (public read, authenticated write)
+-- RLS Policies for apps (public read, admin write)
 CREATE POLICY "Anyone can view apps" ON apps
   FOR SELECT USING (true);
 
-CREATE POLICY "Any authenticated user can modify apps" ON apps
-  FOR ALL USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Only admins can modify apps" ON apps
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM users 
+      WHERE users.id = auth.uid() AND users.role = 'admin'
+    )
+  );
 
--- Authenticated users can view messages
-CREATE POLICY "Any authenticated user can view messages" ON messages
-  FOR SELECT USING (auth.uid() IS NOT NULL);
+-- RLS Policies for messages (admins only)
+CREATE POLICY "Only admins can view messages" ON messages
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM users 
+      WHERE users.id = auth.uid() AND users.role = 'admin'
+    )
+  );
 
 CREATE POLICY "Anyone can insert messages" ON messages
   FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Any authenticated user can update messages" ON messages
-  FOR UPDATE USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Only admins can update messages" ON messages
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM users 
+      WHERE users.id = auth.uid() AND users.role = 'admin'
+    )
+  );
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

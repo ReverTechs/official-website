@@ -13,7 +13,16 @@ export default async function AdminLayout({
     redirect("/auth/login");
   }
 
-  // Admin role no longer required: any authenticated user can access
+  // Require admin role
+  const { data: userData } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!userData || userData.role !== "admin") {
+    redirect("/");
+  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -9,7 +9,16 @@ export default async function AdminContentPage() {
     redirect("/auth/login");
   }
 
-  // Admin role no longer required
+  // Require admin role
+  const { data: userData } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!userData || userData.role !== "admin") {
+    redirect("/");
+  }
 
   // Fetch all content
   const { data: homeContent } = await supabase
