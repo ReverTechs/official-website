@@ -1,9 +1,21 @@
 import Link from "next/link";
 import { Github, Linkedin, Mail, Twitter } from "lucide-react";
 import { ContactForm } from "./contact-form";
+import { createClient } from "@/lib/supabase/server";
 
-export function Footer() {
+export async function Footer() {
   const currentYear = new Date().getFullYear();
+  const supabase = await createClient();
+  
+  const { data: contactContent } = await supabase
+    .from("site_content")
+    .select("*")
+    .eq("section_name", "contact")
+    .single();
+
+  const email = contactContent?.content?.email || "contact@blessings.com";
+  const description = contactContent?.content?.description || "Feel free to reach out through any of these channels. I'm always open to discussing new opportunities.";
+  const social = contactContent?.content?.social || [];
 
   return (
     <footer id="contact" className="bg-muted/30 border-t border-border">
@@ -23,7 +35,7 @@ export function Footer() {
             <div>
               <h3 className="text-2xl font-semibold mb-4">Let&apos;s Connect</h3>
               <p className="text-muted-foreground mb-6">
-                Feel free to reach out through any of these channels. I&apos;m always open to discussing new opportunities.
+                {description}
               </p>
             </div>
 
@@ -32,11 +44,11 @@ export function Footer() {
                 <h4 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
                   Email
                 </h4>
-                <a href="mailto:contact@blessings.com" className="flex items-center gap-3 text-lg hover:text-primary transition-colors group">
+                <a href={`mailto:${email}`} className="flex items-center gap-3 text-lg hover:text-primary transition-colors group">
                   <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                     <Mail size={20} />
                   </div>
-                  <span>contact@blessings.com</span>
+                  <span>{email}</span>
                 </a>
               </div>
 
@@ -45,15 +57,19 @@ export function Footer() {
                   Social Media
                 </h4>
                 <div className="flex gap-3">
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-border hover:bg-accent transition-all hover:scale-105 group">
-                    <Github size={24} className="group-hover:text-primary" />
-                  </a>
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-border hover:bg-accent transition-all hover:scale-105 group">
-                    <Linkedin size={24} className="group-hover:text-primary" />
-                  </a>
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-border hover:bg-accent transition-all hover:scale-105 group">
-                    <Twitter size={24} className="group-hover:text-primary" />
-                  </a>
+                  {social.map((platform: any, index: number) => {
+                    const socialIcons: Record<string, any> = {
+                      Github: Github,
+                      Linkedin: Linkedin,
+                      Twitter: Twitter,
+                    };
+                    const Icon = socialIcons[platform.name] || Mail;
+                    return (
+                      <a key={index} href={platform.url} target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-border hover:bg-accent transition-all hover:scale-105 group">
+                        <Icon size={24} className="group-hover:text-primary" />
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
 

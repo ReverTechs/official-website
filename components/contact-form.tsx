@@ -27,15 +27,25 @@ export function ContactForm() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call - In production, integrate with your backend/email service
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Save to database
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    console.log("Form submitted:", formData);
-    
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+      if (!response.ok) throw new Error("Failed to send message");
+      
+      // Reset form
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
 
     // Reset success message after 3 seconds
     setTimeout(() => {

@@ -1,4 +1,19 @@
-export function HomeHero() {
+import { createClient } from "@/lib/supabase/server";
+
+export async function HomeHero() {
+  const supabase = await createClient();
+  
+  const { data: homeContent } = await supabase
+    .from("site_content")
+    .select("*")
+    .eq("section_name", "home_hero")
+    .single();
+
+  const title = homeContent?.title || "Blessings Chilemba";
+  const subtitle = homeContent?.subtitle || "Developer & App Creator";
+  const description = homeContent?.content?.description || 
+    "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users.";
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Animated Background */}
@@ -10,21 +25,20 @@ export function HomeHero() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-center space-y-8">
         <div className="space-y-4 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+          <h1 className="text-xl md:text-6xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Blessings Chilemba
+              {title}
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground font-light">
-            Developer & App Creator
+            {subtitle}
           </p>
         </div>
 
         <div className="space-y-6 animate-fade-in-up">
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Crafting digital experiences that make a difference. 
-            Building innovative apps and solutions that empower users.
+            {description}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

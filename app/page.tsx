@@ -5,7 +5,7 @@ import { AppsSection } from "@/components/apps-section";
 import { Footer } from "@/components/footer";
 import { ScrollToTop } from "@/components/scroll-to-top";
 
-export default function Home() {
+export default async function Home() {
   return (
     <main className="min-h-screen">
       <Navbar />

@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 
 export function ProfileAvatar() {
   const [user, setUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -24,6 +25,17 @@ export function ProfileAvatar() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
+      if (user) {
+        // Get user role from database
+        const { data: userData } = await supabase
+          .from("users")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        setUserRole(userData?.role || null);
+      }
+      
       setLoading(false);
     }
     getUser();
@@ -56,13 +68,17 @@ export function ProfileAvatar() {
         <DropdownMenuSeparator />
         {user ? (
           <>
-            <DropdownMenuItem asChild>
-              <Link href="/protected" className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                Dashboard
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {userRole === "admin" && (
+              <>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin" className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem onClick={handleLogout} className="text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out

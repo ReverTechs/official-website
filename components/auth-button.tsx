@@ -1,19 +1,49 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 import { LogoutButton } from "./logout-button";
 
-export async function AuthButton() {
-  const supabase = await createClient();
+export function AuthButton() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // You can also use getUser() which will be slower.
-  const { data } = await supabase.auth.getClaims();
+  useEffect(() => {
+    const supabase = createClient();
+    let isMounted = true;
 
-  const user = data?.claims;
+    const fetchUser = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (isMounted) {
+          setEmail(data.user?.email ?? null);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
 
-  return user ? (
+    fetchUser();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      fetchUser();
+    });
+
+    return () => {
+      isMounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (loading) {
+    return <div className="text-sm text-muted-foreground">Loading…</div>;
+  }
+
+  return email ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      Hey, {email}!
       <LogoutButton />
     </div>
   ) : (

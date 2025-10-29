@@ -44,7 +44,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
       if (signUpError) throw signUpError;
@@ -57,8 +57,8 @@ export function SignUpForm({
       
       if (signInError) throw signInError;
       
-      // Redirect to protected page
-      router.push("/protected");
+      // Redirect to home page after signup
+      router.push("/");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
