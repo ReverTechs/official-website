@@ -56,7 +56,7 @@ export function Navbar() {
               className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent hover:opacity-80 transition-opacity flex items-center gap-2 group"
             >
               <Home className="h-6 w-6 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
-              <span className="group-hover:translate-x-2 transition-transform duration-200">Blessings Chilemba</span>
+              <span className="group-hover:translate-x-2 transition-transform duration-200">Blessings Rever Chilemba</span>
             </Link>
           </div>
           

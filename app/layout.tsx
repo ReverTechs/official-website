@@ -9,7 +9,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Blessings Chilemba - Developer & App Creator",
+  title: "Blessings Rever Chilemba - Developer & App Creator",
   description: "Official website of Blessings Chilemba. Discover innovative apps and digital solutions. Download the latest mobile and web applications.",
 };
 

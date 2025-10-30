@@ -81,7 +81,7 @@ export function ContactForm() {
             required
             value={formData.name}
             onChange={handleChange}
-            placeholder="John Doe"
+            placeholder="Chris Lungu"
             className="bg-background"
           />
         </div>
@@ -122,7 +122,7 @@ export function ContactForm() {
           required
           value={formData.message}
           onChange={handleChange}
-          placeholder="Tell me more about your project or question..."
+          placeholder="Write the message or question..."
           rows={6}
           className="bg-background resize-none"
         />
