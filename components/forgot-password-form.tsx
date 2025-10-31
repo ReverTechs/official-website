@@ -50,7 +50,7 @@ export function ForgotPasswordForm({
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
+            <CardDescription>Password reset instructions sent!</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">

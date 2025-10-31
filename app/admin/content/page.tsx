@@ -51,10 +51,10 @@ export default async function AdminContentPage() {
     .single();
 
   return (
-    <div className="space-y-8">
-      <div className="border-b border-border pb-4">
-        <h1 className="text-4xl font-bold mb-2">Content Management</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="border-b border-border pb-3 sm:pb-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">Content Management</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Edit all sections of your website in one place
         </p>
       </div>

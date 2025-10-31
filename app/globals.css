@@ -101,6 +101,22 @@
   .delay-700 {
     animation-delay: 0.7s;
   }
+
+  /* Apple-like smooth typography */
+  @supports (-webkit-font-smoothing: antialiased) {
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+
+  /* Line clamp utility */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 /* Smooth scroll behavior */

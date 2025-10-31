@@ -24,11 +24,11 @@ export function AdminNavbar() {
   ];
 
   return (
-    <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-8">
-            <Link href="/admin" className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+        <div className="flex items-center justify-between h-14 sm:h-16">
+          <div className="flex items-center gap-3 sm:gap-6 md:gap-8">
+            <Link href="/admin" className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Admin Panel
             </Link>
 
@@ -43,7 +43,7 @@ export function AdminNavbar() {
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm"
                     >
                       <Icon className="h-4 w-4" />
                       {item.label}
@@ -63,6 +63,7 @@ export function AdminNavbar() {
     </nav>
   );
 }
+
 
 
 

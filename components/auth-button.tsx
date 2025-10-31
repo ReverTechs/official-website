@@ -38,20 +38,20 @@ export function AuthButton() {
   }, []);
 
   if (loading) {
-    return <div className="text-sm text-muted-foreground">Loading…</div>;
+    return <div className="text-xs sm:text-sm text-muted-foreground">Loading…</div>;
   }
 
   return email ? (
-    <div className="flex items-center gap-4">
-      Hey, {email}!
+    <div className="flex items-center gap-2 sm:gap-4">
+      <span className="hidden sm:inline text-xs sm:text-sm text-muted-foreground">Hey, {email}!</span>
       <LogoutButton />
     </div>
   ) : (
-    <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+    <div className="flex gap-1.5 sm:gap-2">
+      <Button asChild size="sm" variant={"outline"} className="text-xs sm:text-sm">
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button asChild size="sm" variant={"default"} className="text-xs sm:text-sm">
         <Link href="/auth/sign-up">Sign up</Link>
       </Button>
     </div>

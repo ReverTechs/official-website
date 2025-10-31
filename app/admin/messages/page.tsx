@@ -27,10 +27,10 @@ export default async function AdminMessagesPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="space-y-8">
-      <div className="border-b border-border pb-4">
-        <h1 className="text-4xl font-bold mb-2">Messages & Notifications</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="border-b border-border pb-3 sm:pb-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">Messages & Notifications</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           View and respond to messages from visitors
         </p>
       </div>

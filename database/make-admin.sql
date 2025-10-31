@@ -10,3 +10,4 @@ SELECT email, role FROM users WHERE email = 'your-email@example.com';
 
 
 
+
