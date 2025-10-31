@@ -1,8 +1,7 @@
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Download, ExternalLink } from "lucide-react";
-import Image from "next/image";
+import { Download } from "lucide-react";
 
 interface AppCardProps {
   title: string;
@@ -11,9 +10,21 @@ interface AppCardProps {
   downloadLink: string;
   imageUrl?: string;
   tags: string[];
+  id?: string;
+  filePath?: string | null;
 }
 
-export function AppCard({ title, description, category, downloadLink, tags }: AppCardProps) {
+export function AppCard({ title, description, category, downloadLink, tags, id, filePath }: AppCardProps) {
+  const handleDownload = () => {
+    // If file_path exists, use the download API route
+    if (filePath && id) {
+      window.location.href = `/api/apps/download?appId=${id}`;
+    } else if (downloadLink) {
+      // Otherwise, use the external download link
+      window.open(downloadLink, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 group hover:-translate-y-1 sm:hover:-translate-y-2">
       {/* App Image/Icon Placeholder */}
@@ -50,12 +61,13 @@ export function AppCard({ title, description, category, downloadLink, tags }: Ap
         )}
 
         <div className="pt-2 sm:pt-4">
-          <a href={downloadLink} target="_blank" rel="noopener noreferrer">
-            <Button className="w-full group-hover:bg-primary transition-all duration-300 group-hover:scale-105 text-sm sm:text-base h-9 sm:h-10">
-              <Download className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              Download
-            </Button>
-          </a>
+          <Button 
+            onClick={handleDownload}
+            className="w-full group-hover:bg-primary transition-all duration-300 group-hover:scale-105 text-sm sm:text-base h-9 sm:h-10"
+          >
+            <Download className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            Download
+          </Button>
         </div>
       </div>
     </Card>

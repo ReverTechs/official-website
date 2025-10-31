@@ -16,7 +16,10 @@ import {
   User as UserIcon,
   FileText,
   AppWindow,
-  Mail
+  Mail,
+  Upload,
+  X,
+  File
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -77,13 +80,17 @@ export function ContentManager({
     title: app.title,
     description: app.description,
     category: app.category,
-    download_link: app.download_link,
+    download_link: app.download_link || "",
     image_url: app.image_url || "",
     tags: app.tags?.join(", ") || "",
     display_order: app.display_order,
+    file_name: app.file_name || "",
+    file_size: app.file_size || 0,
+    file_type: app.file_type || "",
   })));
 
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
   const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
 
   const toggleSection = (section: string) => {
@@ -186,14 +193,24 @@ export function ContentManager({
   const saveApp = async (app: any) => {
     setSaving(true);
     try {
-      const appData = {
+      const appData: any = {
         title: app.title,
         description: app.description,
         category: app.category,
-        download_link: app.download_link,
         image_url: app.image_url,
         tags: app.tags.split(", ").filter((tag: string) => tag.trim()),
       };
+
+      // Only set download_link if it's provided (either from upload or external)
+      if (app.download_link) {
+        appData.download_link = app.download_link;
+      }
+
+      // Include file information if available
+      if (app.file_name) {
+        // File info is already saved during upload, but we can update other fields
+        // Note: file_path, file_name, file_size, file_type are set during upload
+      }
 
       if (app.id) {
         const { error } = await supabase
@@ -245,7 +262,119 @@ export function ContentManager({
       image_url: "",
       tags: "",
       display_order: appsData.length,
+      file_name: "",
+      file_size: 0,
+      file_type: "",
     }]);
+  };
+
+  const handleFileUpload = async (appIndex: number, file: File | null) => {
+    if (!file) return;
+
+    const app = appsData[appIndex];
+    
+    // Check if app is saved first
+    if (!app.id) {
+      setMessage({ 
+        type: "error", 
+        text: "Please save the app first before uploading a file. Fill in at least the title, description, and category, then click Save." 
+      });
+      return;
+    }
+    
+    // Validate file type
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (!fileExtension || !["apk", "ipa"].includes(fileExtension)) {
+      setMessage({ type: "error", text: "Invalid file type. Only .apk and .ipa files are allowed." });
+      return;
+    }
+
+    // Validate file size (max 500MB)
+    const maxSize = 500 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setMessage({ type: "error", text: "File size exceeds 500MB limit" });
+      return;
+    }
+
+    setUploading({ ...uploading, [appIndex]: true });
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("appId", app.id);
+
+      const response = await fetch("/api/apps/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      // Update app data with file information
+      const newApps = [...appsData];
+      newApps[appIndex] = {
+        ...newApps[appIndex],
+        file_name: data.fileName,
+        file_size: data.fileSize,
+        file_type: data.fileType,
+        download_link: data.publicUrl,
+      };
+      setAppsData(newApps);
+
+      setMessage({ type: "success", text: "File uploaded successfully!" });
+      router.refresh();
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.message || "Upload failed" });
+    } finally {
+      setUploading({ ...uploading, [appIndex]: false });
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
+  };
+
+  const removeFile = async (appIndex: number) => {
+    const app = appsData[appIndex];
+    const newApps = [...appsData];
+    newApps[appIndex] = {
+      ...newApps[appIndex],
+      file_name: "",
+      file_size: 0,
+      file_type: "",
+      download_link: "",
+    };
+    setAppsData(newApps);
+
+    // If app exists in database, update it
+    if (app.id) {
+      try {
+        const { error } = await supabase
+          .from("apps")
+          .update({
+            file_path: null,
+            file_name: null,
+            file_size: null,
+            file_type: null,
+            download_link: null,
+          })
+          .eq("id", app.id);
+
+        if (error) throw error;
+        setMessage({ type: "success", text: "File removed successfully!" });
+        router.refresh();
+      } catch (error: any) {
+        setMessage({ type: "error", text: error.message });
+      }
+    }
   };
 
   useEffect(() => {
@@ -460,18 +589,89 @@ export function ContentManager({
                         className="text-sm"
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm">App File (.apk or .ipa)</Label>
+                      {app.file_name ? (
+                        <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <File className="h-4 w-4 text-primary flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{app.file_name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {formatFileSize(app.file_size)} • {app.file_type ? app.file_type.toUpperCase() : ''}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index)}
+                            className="flex-shrink-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <label
+                              htmlFor={`file-upload-${index}`}
+                              className="flex-1 cursor-pointer"
+                            >
+                              <div className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg transition-colors ${
+                                !app.id ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent cursor-pointer'
+                              }`}>
+                                <Upload className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {!app.id ? 'Save the app first to upload file' : 'Click to upload .apk or .ipa file'}
+                                </span>
+                              </div>
+                              <input
+                                id={`file-upload-${index}`}
+                                type="file"
+                                accept=".apk,.ipa"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    handleFileUpload(index, file);
+                                  }
+                                }}
+                                disabled={uploading[index] || !app.id}
+                              />
+                            </label>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Maximum file size: 500MB. Supported formats: .apk (Android), .ipa (iOS)
+                          </p>
+                        </div>
+                      )}
+                      {uploading[index] && (
+                        <p className="text-xs text-muted-foreground">Uploading...</p>
+                      )}
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
-                        <Label className="text-sm">Download Link</Label>
+                        <Label className="text-sm">
+                          Download Link {app.file_name && "(auto-filled from upload)"}
+                        </Label>
                         <Input
-                          value={app.download_link}
+                          value={app.download_link || ""}
                           onChange={(e) => {
                             const newApps = [...appsData];
                             newApps[index].download_link = e.target.value;
                             setAppsData(newApps);
                           }}
+                          placeholder={app.file_name ? "Will use uploaded file" : "External download URL"}
+                          disabled={!!app.file_name}
                           className="text-sm"
                         />
+                        {!app.file_name && (
+                          <p className="text-xs text-muted-foreground">
+                            Or provide an external download URL if not uploading a file
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm">Image URL</Label>

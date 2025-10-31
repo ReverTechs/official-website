@@ -23,7 +23,15 @@ export function AppsWrapperClient({ apps }: AppsWrapperClientProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         {apps.map((app, index) => (
           <ScrollAnimation key={app.id} delay={index * 100}>
-            <AppCard {...app} />
+            <AppCard 
+              title={app.title}
+              description={app.description}
+              category={app.category}
+              downloadLink={app.download_link || ""}
+              tags={app.tags || []}
+              id={app.id}
+              filePath={app.file_path}
+            />
           </ScrollAnimation>
         ))}
       </div>
