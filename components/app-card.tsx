@@ -2,6 +2,7 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Download } from "lucide-react";
+import Image from "next/image";
 
 interface AppCardProps {
   title: string;
@@ -12,9 +13,10 @@ interface AppCardProps {
   tags: string[];
   id?: string;
   filePath?: string | null;
+  imagePath?: string | null;
 }
 
-export function AppCard({ title, description, category, downloadLink, tags, id, filePath }: AppCardProps) {
+export function AppCard({ title, description, category, downloadLink, tags, id, filePath, imageUrl, imagePath }: AppCardProps) {
   const handleDownload = () => {
     // If file_path exists, use the download API route
     if (filePath && id) {
@@ -25,14 +27,34 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
     }
   };
 
+  // Determine which image to show: uploaded image, external image URL, or fallback to letter
+  // If image_url exists, use it (it will be set for both uploaded images and external URLs)
+  const hasImage = imageUrl || imagePath;
+  const displayImage = imageUrl;
+
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 group hover:-translate-y-1 sm:hover:-translate-y-2">
-      {/* App Image/Icon Placeholder */}
+      {/* App Image */}
       <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        <div className="relative z-10 text-4xl sm:text-5xl md:text-6xl font-bold text-primary/50 group-hover:scale-110 transition-transform duration-300">
-          {title.charAt(0)}
-        </div>
+        {hasImage && displayImage ? (
+          <>
+            <Image
+              src={displayImage}
+              alt={title}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            <div className="relative z-10 text-4xl sm:text-5xl md:text-6xl font-bold text-primary/50 group-hover:scale-110 transition-transform duration-300">
+              {title.charAt(0)}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">

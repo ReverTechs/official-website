@@ -19,7 +19,8 @@ import {
   Mail,
   Upload,
   X,
-  File
+  File,
+  Image as ImageIcon
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -82,6 +83,7 @@ export function ContentManager({
     category: app.category,
     download_link: app.download_link || "",
     image_url: app.image_url || "",
+    image_path: app.image_path || "",
     tags: app.tags?.join(", ") || "",
     display_order: app.display_order,
     file_name: app.file_name || "",
@@ -91,6 +93,7 @@ export function ContentManager({
 
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
+  const [uploadingImage, setUploadingImage] = useState<{ [key: string]: boolean }>({});
   const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
 
   const toggleSection = (section: string) => {
@@ -260,6 +263,7 @@ export function ContentManager({
       category: "",
       download_link: "",
       image_url: "",
+      image_path: "",
       tags: "",
       display_order: appsData.length,
       file_name: "",
@@ -374,6 +378,102 @@ export function ContentManager({
       } catch (error: any) {
         setMessage({ type: "error", text: error.message });
       }
+    }
+  };
+
+  const handleImageUpload = async (appIndex: number, file: File | null) => {
+    if (!file) return;
+
+    const app = appsData[appIndex];
+    
+    // Check if app is saved first
+    if (!app.id) {
+      setMessage({ 
+        type: "error", 
+        text: "Please save the app first before uploading an image. Fill in at least the title, description, and category, then click Save." 
+      });
+      return;
+    }
+    
+    // Validate file type
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    const allowedExtensions = ["jpg", "jpeg", "png", "webp", "gif"];
+    if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+      setMessage({ type: "error", text: "Invalid file type. Only image files (JPG, PNG, WebP, GIF) are allowed." });
+      return;
+    }
+
+    // Validate file size (max 10MB for images)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setMessage({ type: "error", text: "File size exceeds 10MB limit" });
+      return;
+    }
+
+    setUploadingImage({ ...uploadingImage, [appIndex]: true });
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("appId", app.id);
+
+      const response = await fetch("/api/apps/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      // Update app data with image information
+      const newApps = [...appsData];
+      newApps[appIndex] = {
+        ...newApps[appIndex],
+        image_path: data.filePath,
+        image_url: data.publicUrl,
+      };
+      setAppsData(newApps);
+
+      setMessage({ type: "success", text: "Image uploaded successfully!" });
+      router.refresh();
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.message || "Upload failed" });
+    } finally {
+      setUploadingImage({ ...uploadingImage, [appIndex]: false });
+    }
+  };
+
+  const removeImage = async (appIndex: number) => {
+    const app = appsData[appIndex];
+    
+    if (!app.id) return;
+
+    try {
+      const response = await fetch(`/api/apps/upload-image?appId=${app.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to remove image");
+      }
+
+      // Update app data
+      const newApps = [...appsData];
+      newApps[appIndex] = {
+        ...newApps[appIndex],
+        image_path: "",
+        image_url: "",
+      };
+      setAppsData(newApps);
+
+      setMessage({ type: "success", text: "Image removed successfully!" });
+      router.refresh();
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.message });
     }
   };
 
@@ -674,16 +774,84 @@ export function ContentManager({
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm">Image URL</Label>
-                        <Input
-                          value={app.image_url}
-                          onChange={(e) => {
-                            const newApps = [...appsData];
-                            newApps[index].image_url = e.target.value;
-                            setAppsData(newApps);
-                          }}
-                          className="text-sm"
-                        />
+                        <Label className="text-sm">App Image</Label>
+                        {app.image_url && app.image_path ? (
+                          <div className="space-y-2">
+                            <div className="relative w-full aspect-video border rounded-lg overflow-hidden bg-muted">
+                              <img 
+                                src={app.image_url} 
+                                alt={app.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeImage(index)}
+                              className="w-full"
+                            >
+                              <X className="mr-2 h-4 w-4" />
+                              Remove Image
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <label
+                                htmlFor={`image-upload-${index}`}
+                                className="flex-1 cursor-pointer"
+                              >
+                                <div className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg transition-colors ${
+                                  !app.id ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent cursor-pointer'
+                                }`}>
+                                  <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                                  <span className="text-sm text-muted-foreground">
+                                    {!app.id ? 'Save the app first to upload image' : 'Click to upload app image'}
+                                  </span>
+                                </div>
+                                <input
+                                  id={`image-upload-${index}`}
+                                  type="file"
+                                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      handleImageUpload(index, file);
+                                    }
+                                  }}
+                                  disabled={uploadingImage[index] || !app.id}
+                                />
+                              </label>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Maximum file size: 10MB. Supported formats: JPG, PNG, WebP, GIF
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Or you can enter an external image URL below
+                            </p>
+                            <Input
+                              value={app.image_url || ""}
+                              onChange={(e) => {
+                                const newApps = [...appsData];
+                                newApps[index].image_url = e.target.value;
+                                setAppsData(newApps);
+                              }}
+                              placeholder="https://example.com/image.jpg"
+                              className="text-sm"
+                              disabled={!!app.image_path}
+                            />
+                            {app.image_path && (
+                              <p className="text-xs text-muted-foreground">
+                                Remove uploaded image to use external URL
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        {uploadingImage[index] && (
+                          <p className="text-xs text-muted-foreground">Uploading...</p>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">

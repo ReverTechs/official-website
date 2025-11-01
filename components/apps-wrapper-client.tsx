@@ -31,6 +31,8 @@ export function AppsWrapperClient({ apps }: AppsWrapperClientProps) {
               tags={app.tags || []}
               id={app.id}
               filePath={app.file_path}
+              imageUrl={app.image_url}
+              imagePath={app.image_path}
             />
           </ScrollAnimation>
         ))}
