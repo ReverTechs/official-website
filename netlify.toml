@@ -1,16 +1,58 @@
-[build]
-  command = "npm run build"
-  publish = ".next"
+[images]
+remote_images = [
+  "^(?:https:\\/\\/(?!\\.)[^/]*?\\.supabase\\.co\\/storage\\/v1\\/object\\/public(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)|$))$"
+]
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+[[headers]]
+for = "/_next/static/*"
 
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
 
-[functions]
-  included_files = [
-    "public/**",
-    "data/**",
-    "config/**",
-    "lib/**",
-    "content/**"
-  ]
+[[redirects]]
+from = "/_next/image"
+to = "/.netlify/images?url=:url&w=:width&q=:quality"
+status = 200
+
+  [redirects.query]
+  url = ":url"
+  w = ":width"
+  q = ":quality"
+
+[[redirects]]
+from = "/_ipx/*"
+to = "/.netlify/images?url=:url&w=:width&q=:quality"
+status = 200
+
+  [redirects.query]
+  url = ":url"
+  w = ":width"
+  q = ":quality"
+
+[context]
+
+  [context.production]
+
+    [context.production.images]
+    remote_images = [
+      "^(?:https:\\/\\/(?!\\.)[^/]*?\\.supabase\\.co\\/storage\\/v1\\/object\\/public(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)|$))$"
+    ]
+
+    [[context.production.headers]]
+    for = "/_next/static/*"
+
+      [context.production.headers.values]
+      Cache-Control = "public, max-age=31536000, immutable"
+
+  [context.main]
+
+    [context.main.images]
+    remote_images = [
+      "^(?:https:\\/\\/(?!\\.)[^/]*?\\.supabase\\.co\\/storage\\/v1\\/object\\/public(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)|$))$"
+    ]
+
+    [[context.main.headers]]
+    for = "/_next/static/*"
+
+      [context.main.headers.values]
+      Cache-Control = "public, max-age=31536000, immutable"
