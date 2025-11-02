@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS apps (
   image_url TEXT,
   tags TEXT[],
   display_order INTEGER DEFAULT 0,
+  downloads INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -139,6 +140,16 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
+-- Function to increment app downloads (allows public access without admin permissions)
+CREATE OR REPLACE FUNCTION increment_app_downloads(app_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE apps 
+  SET downloads = COALESCE(downloads, 0) + 1
+  WHERE id = app_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Insert initial data
 INSERT INTO site_content (section_name, title, subtitle, content, metadata) VALUES
 ('home_hero', 'Blessings Chilemba', 'Developer & App Creator', 
@@ -158,11 +169,11 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT INSERT ON public.users TO anon, authenticated;
 
 -- Insert sample apps data
-INSERT INTO apps (title, description, category, download_link, tags, display_order) VALUES
-('Productivity Pro', 'A powerful task management app that helps you stay organized and boost your productivity. Features include smart reminders, project tracking, and team collaboration.', 'Productivity', 'https://example.com/download/productivity-pro', ARRAY['iOS', 'Android', 'Task Management'], 1),
-('Photo Editor Plus', 'Professional-grade photo editing tools in your pocket. Transform your photos with filters, effects, and advanced editing features.', 'Photo & Video', 'https://example.com/download/photo-editor', ARRAY['iOS', 'Android', 'Photo Editing'], 2),
-('Finance Tracker', 'Take control of your finances with an intuitive expense tracker. Monitor your spending, set budgets, and achieve your financial goals.', 'Finance', 'https://example.com/download/finance-tracker', ARRAY['iOS', 'Finance', 'Analytics'], 3),
-('Mindful Meditation', 'Find peace and clarity with guided meditation sessions. Features relaxing sounds, breathing exercises, and personalized mindfulness programs.', 'Health & Wellness', 'https://example.com/download/mindful-meditation', ARRAY['iOS', 'Android', 'Wellness'], 4),
-('Language Learner', 'Master new languages with interactive lessons, speech recognition, and spaced repetition. Learn at your own pace with personalized courses.', 'Education', 'https://example.com/download/language-learner', ARRAY['iOS', 'Android', 'Education'], 5),
-('Weather Forecast', 'Get accurate weather forecasts with beautiful visuals. Track multiple locations, receive alerts, and plan your activities with confidence.', 'Weather', 'https://example.com/download/weather-forecast', ARRAY['iOS', 'Weather', 'Forecasts'], 6);
+INSERT INTO apps (title, description, category, download_link, tags, display_order, downloads) VALUES
+('Productivity Pro', 'A powerful task management app that helps you stay organized and boost your productivity. Features include smart reminders, project tracking, and team collaboration.', 'Productivity', 'https://example.com/download/productivity-pro', ARRAY['iOS', 'Android', 'Task Management'], 1, 25000),
+('Photo Editor Plus', 'Professional-grade photo editing tools in your pocket. Transform your photos with filters, effects, and advanced editing features.', 'Photo & Video', 'https://example.com/download/photo-editor', ARRAY['iOS', 'Android', 'Photo Editing'], 2, 18000),
+('Finance Tracker', 'Take control of your finances with an intuitive expense tracker. Monitor your spending, set budgets, and achieve your financial goals.', 'Finance', 'https://example.com/download/finance-tracker', ARRAY['iOS', 'Finance', 'Analytics'], 3, 12000),
+('Mindful Meditation', 'Find peace and clarity with guided meditation sessions. Features relaxing sounds, breathing exercises, and personalized mindfulness programs.', 'Health & Wellness', 'https://example.com/download/mindful-meditation', ARRAY['iOS', 'Android', 'Wellness'], 4, 35000),
+('Language Learner', 'Master new languages with interactive lessons, speech recognition, and spaced repetition. Learn at your own pace with personalized courses.', 'Education', 'https://example.com/download/language-learner', ARRAY['iOS', 'Android', 'Education'], 5, 42000),
+('Weather Forecast', 'Get accurate weather forecasts with beautiful visuals. Track multiple locations, receive alerts, and plan your activities with confidence.', 'Weather', 'https://example.com/download/weather-forecast', ARRAY['iOS', 'Weather', 'Forecasts'], 6, 15000);
 

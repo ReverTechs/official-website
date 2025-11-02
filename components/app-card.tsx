@@ -3,6 +3,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Download } from "lucide-react";
 import Image from "next/image";
+import { formatDownloads } from "@/lib/utils";
 
 interface AppCardProps {
   title: string;
@@ -14,9 +15,10 @@ interface AppCardProps {
   id?: string;
   filePath?: string | null;
   imagePath?: string | null;
+  downloads?: number;
 }
 
-export function AppCard({ title, description, category, downloadLink, tags, id, filePath, imageUrl, imagePath }: AppCardProps) {
+export function AppCard({ title, description, category, downloadLink, tags, id, filePath, imageUrl, imagePath, downloads = 0 }: AppCardProps) {
   const handleDownload = () => {
     // If file_path exists, use the download API route
     if (filePath && id) {
@@ -61,7 +63,16 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 group-hover:text-primary transition-colors truncate">{title}</h3>
-            <p className="text-xs sm:text-sm text-muted-foreground">{category}</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-xs sm:text-sm text-muted-foreground">{category}</p>
+              {downloads > 0 && (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-xs sm:text-sm">
+                  <Download className="h-3 w-3 text-primary" />
+                  <span className="font-semibold text-primary">{formatDownloads(downloads)}</span>
+                  <span className="text-muted-foreground">downloads</span>
+                </div>
+              )}
+            </div>
           </div>
           {tags[0] && (
             <Badge variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors flex-shrink-0 text-xs sm:text-sm">

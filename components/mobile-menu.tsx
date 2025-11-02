@@ -30,30 +30,30 @@ export function MobileMenu() {
           <div
             className="
               fixed top-16 right-0 w-64 h-full
-              bg-white/30 dark:bg-gray-900/30
-              backdrop-blur-lg
-              border-l border-white/20
+              bg-background/98 dark:bg-background/98
+              backdrop-blur-xl
+              border-l border-border
               z-50 p-4 space-y-4 shadow-xl
               text-foreground
             "
           >
             <Link
               href="#about"
-              className="block py-2 hover:text-primary transition-colors"
+              className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
               onClick={() => setIsOpen(false)}
             >
               About
             </Link>
             <Link
               href="#apps"
-              className="block py-2 hover:text-primary transition-colors"
+              className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
               onClick={() => setIsOpen(false)}
             >
               Apps
             </Link>
             <Link
               href="#contact"
-              className="block py-2 hover:text-primary transition-colors"
+              className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
               onClick={() => setIsOpen(false)}
             >
               Contact

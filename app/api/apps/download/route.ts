@@ -30,6 +30,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Increment download count (non-blocking, fail silently if it fails)
+    try {
+      await supabase.rpc('increment_app_downloads', { app_id: appId });
+    } catch (error) {
+      // Silently fail - don't block download if counter increment fails
+      console.log("Could not increment download count:", error);
+    }
+
     // If file_path exists, download from storage
     if (app.file_path && app.file_name) {
       const { data: fileData, error: downloadError } = await supabase.storage
