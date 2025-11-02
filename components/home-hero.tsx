@@ -2,18 +2,27 @@ import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
 
 export async function HomeHero() {
-  const supabase = await createClient();
-  
-  const { data: homeContent } = await supabase
-    .from("site_content")
-    .select("*")
-    .eq("section_name", "home_hero")
-    .single();
+  let title = "Blessings Chilemba";
+  let subtitle = "Developer & App Creator";
+  let description = "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users.";
 
-  const title = homeContent?.title || "Blessings Chilemba";
-  const subtitle = homeContent?.subtitle || "Developer & App Creator";
-  const description = homeContent?.content?.description || 
-    "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users.";
+  try {
+    const supabase = await createClient();
+    const { data: homeContent } = await supabase
+      .from("site_content")
+      .select("*")
+      .eq("section_name", "home_hero")
+      .single();
+
+    if (homeContent) {
+      title = homeContent.title || title;
+      subtitle = homeContent.subtitle || subtitle;
+      description = homeContent.content?.description || description;
+    }
+  } catch (error) {
+    // Gracefully handle errors (missing env vars, database issues, etc.)
+    console.error("Error loading home content:", error);
+  }
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-8 sm:pb-0">

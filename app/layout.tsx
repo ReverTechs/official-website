@@ -4,9 +4,28 @@ import { ThemeProvider } from "next-themes";
 
 import "./globals.css";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+// Support both Vercel and Netlify deployments
+function getDefaultUrl() {
+  // First, check for explicitly set site URL
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  
+  // Check for Vercel deployment
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // Check for Netlify deployment
+  if (process.env.NETLIFY && process.env.DEPLOY_PRIME_URL) {
+    return process.env.DEPLOY_PRIME_URL;
+  }
+  
+  // Fallback to localhost
+  return "http://localhost:3000";
+}
+
+const defaultUrl = getDefaultUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),

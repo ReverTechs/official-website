@@ -1,6 +1,7 @@
 import { updateSession } from "@/lib/supabase/middleware";
 import { type NextRequest } from "next/server";
 
+// Netlify requires the function to be named 'proxy'
 export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
