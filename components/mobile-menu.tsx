@@ -20,27 +20,39 @@ export function MobileMenu() {
 
       {isOpen && (
         <>
-          <div 
+          {/* Dim overlay behind the menu */}
+          <div
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed top-16 right-0 w-64 h-full bg-background border-l border-border z-50 p-4 space-y-4">
-            <Link 
-              href="#about" 
+
+          {/* Main mobile menu with blur effect */}
+          <div
+            className="
+              fixed top-16 right-0 w-64 h-full
+              bg-white/30 dark:bg-gray-900/30
+              backdrop-blur-lg
+              border-l border-white/20
+              z-50 p-4 space-y-4 shadow-xl
+              text-foreground
+            "
+          >
+            <Link
+              href="#about"
               className="block py-2 hover:text-primary transition-colors"
               onClick={() => setIsOpen(false)}
             >
               About
             </Link>
-            <Link 
-              href="#apps" 
+            <Link
+              href="#apps"
               className="block py-2 hover:text-primary transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Apps
             </Link>
-            <Link 
-              href="#contact" 
+            <Link
+              href="#contact"
               className="block py-2 hover:text-primary transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -55,4 +67,3 @@ export function MobileMenu() {
     </div>
   );
 }
-
