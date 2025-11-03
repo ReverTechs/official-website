@@ -1,6 +1,9 @@
 import { ensureUserProfile } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+// Body size limit is configured in next.config.ts via experimental.proxyClientMaxBodySize
+export const maxDuration = 60; // 1 minute for image uploads
+
 export async function POST(request: NextRequest) {
   try {
     const { supabase, user } = await ensureUserProfile();
@@ -216,6 +219,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
 
 
 

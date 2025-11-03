@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Increase body size limit for file uploads (500MB for route handlers)
+  experimental: {
+    proxyClientMaxBodySize: '500mb',
+  },
 };
 
 export default nextConfig;

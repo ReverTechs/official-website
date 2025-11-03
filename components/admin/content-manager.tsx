@@ -239,9 +239,14 @@ export function ContentManager({
         title: app.title,
         description: app.description,
         category: app.category,
-        image_url: app.image_url,
         tags: app.tags.split(", ").filter((tag: string) => tag.trim()),
       };
+
+      // Only include image_url if it exists and is not empty
+      // This prevents schema cache errors when the column might not be recognized
+      if (app.image_url && app.image_url.trim()) {
+        appData.image_url = app.image_url;
+      }
 
       // Only set download_link if it's provided (either from upload or external)
       if (app.download_link) {
@@ -251,12 +256,20 @@ export function ContentManager({
       // Include image_path if it exists (from uploaded image)
       if (app.image_path) {
         appData.image_path = app.image_path;
+        // If we have image_path, also set image_url from it if not already set
+        if (!appData.image_url && app.image_url) {
+          appData.image_url = app.image_url;
+        }
       }
 
       // Include file information if available
       if (app.file_name) {
         // File info is already saved during upload, but we can update other fields
         // Note: file_path, file_name, file_size, file_type are set during upload
+        if (app.file_path) appData.file_path = app.file_path;
+        if (app.file_name) appData.file_name = app.file_name;
+        if (app.file_size) appData.file_size = app.file_size;
+        if (app.file_type) appData.file_type = app.file_type;
       }
 
       if (app.id) {
