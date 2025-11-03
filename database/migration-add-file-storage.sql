@@ -1,5 +1,6 @@
 -- Migration: Add file storage fields to apps table
 -- Run this in Supabase SQL Editor after running schema.sql
+-- This migration is safe to run multiple times (uses IF NOT EXISTS)
 
 -- Add file storage columns to apps table
 ALTER TABLE apps 
@@ -16,11 +17,22 @@ COMMENT ON COLUMN apps.file_type IS 'File type: apk (Android), ipa (iOS), or ext
 COMMENT ON COLUMN apps.image_path IS 'Path to uploaded app image in storage bucket app-image';
 
 -- Make download_link nullable since we can now use file uploads
-ALTER TABLE apps 
-ALTER COLUMN download_link DROP NOT NULL;
+-- This will fail gracefully if already nullable, so we catch and ignore
+DO $$ 
+BEGIN
+    ALTER TABLE apps ALTER COLUMN download_link DROP NOT NULL;
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END $$;
 
 -- Add constraint: either download_link or file_path must be set
-ALTER TABLE apps 
-ADD CONSTRAINT apps_download_required 
-CHECK (download_link IS NOT NULL OR file_path IS NOT NULL);
+-- Drop constraint if it exists first to avoid errors
+DO $$
+BEGIN
+    ALTER TABLE apps DROP CONSTRAINT IF EXISTS apps_download_required;
+    ALTER TABLE apps ADD CONSTRAINT apps_download_required 
+    CHECK (download_link IS NOT NULL OR file_path IS NOT NULL);
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END $$;
 

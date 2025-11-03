@@ -67,6 +67,8 @@ export function ContentManager({
   // About State
   const [aboutData, setAboutData] = useState({
     description: aboutContent?.content?.description || "",
+    yearsOfExperience: aboutContent?.content?.yearsOfExperience || 0,
+    tools: (aboutContent?.content?.tools || []) as Array<{ name: string; icon?: string; category?: string }>,
   });
 
   // Contact State
@@ -146,10 +148,24 @@ export function ContentManager({
   const saveAbout = async () => {
     setSaving(true);
     try {
+      const { data: current } = await supabase
+        .from("site_content")
+        .select("content")
+        .eq("section_name", "about")
+        .single();
+
+      const newContent = {
+        ...current?.content,
+        description: aboutData.description,
+        yearsOfExperience: aboutData.yearsOfExperience || undefined,
+        tools: aboutData.tools.length > 0 ? aboutData.tools : undefined,
+        skills: current?.content?.skills || [],
+      };
+
       const { error } = await supabase
         .from("site_content")
         .update({
-          content: { description: aboutData.description },
+          content: newContent,
         })
         .eq("section_name", "about");
 
@@ -161,6 +177,29 @@ export function ContentManager({
     } finally {
       setSaving(false);
     }
+  };
+
+  const addTool = () => {
+    setAboutData(prev => ({
+      ...prev,
+      tools: [...prev.tools, { name: "", icon: "", category: "" }],
+    }));
+  };
+
+  const removeTool = (index: number) => {
+    setAboutData(prev => ({
+      ...prev,
+      tools: prev.tools.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateTool = (index: number, field: string, value: string) => {
+    setAboutData(prev => ({
+      ...prev,
+      tools: prev.tools.map((tool, i) => 
+        i === index ? { ...tool, [field]: value } : tool
+      ),
+    }));
   };
 
   const saveContact = async () => {
@@ -207,6 +246,11 @@ export function ContentManager({
       // Only set download_link if it's provided (either from upload or external)
       if (app.download_link) {
         appData.download_link = app.download_link;
+      }
+
+      // Include image_path if it exists (from uploaded image)
+      if (app.image_path) {
+        appData.image_path = app.image_path;
       }
 
       // Include file information if available
@@ -484,6 +528,24 @@ export function ContentManager({
     }
   }, [message]);
 
+  // Sync apps state with props when they change (e.g., after refresh)
+  useEffect(() => {
+    setAppsData(apps.map(app => ({
+      id: app.id,
+      title: app.title,
+      description: app.description,
+      category: app.category,
+      download_link: app.download_link || "",
+      image_url: app.image_url || "",
+      image_path: app.image_path || "",
+      tags: app.tags?.join(", ") || "",
+      display_order: app.display_order,
+      file_name: app.file_name || "",
+      file_size: app.file_size || 0,
+      file_type: app.file_type || "",
+    })));
+  }, [apps]);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {message && (
@@ -604,17 +666,99 @@ export function ContentManager({
         </button>
         
         {openSections.about && (
-          <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4 border-t">
+          <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 border-t">
             <div className="space-y-2">
               <Label htmlFor="about-description" className="text-sm">About Text</Label>
               <Textarea
                 id="about-description"
                 value={aboutData.description}
-                onChange={(e) => setAboutData({ description: e.target.value })}
+                onChange={(e) => setAboutData(prev => ({ ...prev, description: e.target.value }))}
                 rows={6}
                 className="text-sm"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="years-experience" className="text-sm">Years of Experience</Label>
+              <Input
+                id="years-experience"
+                type="number"
+                min="0"
+                value={aboutData.yearsOfExperience}
+                onChange={(e) => setAboutData(prev => ({ ...prev, yearsOfExperience: parseInt(e.target.value) || 0 }))}
+                placeholder="e.g., 5"
+                className="text-sm"
+              />
+              <p className="text-xs text-muted-foreground">Leave as 0 to hide the experience section</p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-semibold">Technologies & Tools</Label>
+                <Button 
+                  onClick={addTool} 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8"
+                >
+                  <Plus className="mr-2 h-3 w-3" />
+                  Add Tool
+                </Button>
+              </div>
+              
+              {aboutData.tools.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-2">
+                  No tools added yet. Click "Add Tool" to add technologies you specialize in.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {aboutData.tools.map((tool, index) => (
+                    <Card key={index} className="p-3 sm:p-4 border-primary/20">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Tool Name *</Label>
+                          <Input
+                            value={tool.name}
+                            onChange={(e) => updateTool(index, "name", e.target.value)}
+                            placeholder="e.g., Flutter"
+                            className="text-sm h-9"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Icon (emoji/unicode)</Label>
+                          <Input
+                            value={tool.icon || ""}
+                            onChange={(e) => updateTool(index, "icon", e.target.value)}
+                            placeholder="💙 (optional)"
+                            className="text-sm h-9"
+                          />
+                          <p className="text-xs text-muted-foreground">Emoji or icon character</p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Category</Label>
+                          <Input
+                            value={tool.category || ""}
+                            onChange={(e) => updateTool(index, "category", e.target.value)}
+                            placeholder="e.g., Framework (optional)"
+                            className="text-sm h-9"
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => removeTool(index)}
+                        variant="ghost"
+                        size="sm"
+                        className="mt-2 h-7 text-xs text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="mr-1 h-3 w-3" />
+                        Remove
+                      </Button>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Button onClick={saveAbout} disabled={saving} className="w-full sm:w-auto" size="sm">
               <Save className="mr-2 h-4 w-4" />
               {saving ? "Saving..." : "Save About Section"}
@@ -782,18 +926,44 @@ export function ContentManager({
                                 src={app.image_url} 
                                 alt={app.title}
                                 className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  // Fallback if image fails to load
+                                  console.error("Image failed to load:", app.image_url);
+                                  e.currentTarget.style.display = 'none';
+                                }}
                               />
                             </div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => removeImage(index)}
-                              className="w-full"
-                            >
-                              <X className="mr-2 h-4 w-4" />
-                              Remove Image
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-muted-foreground flex-1">
+                                Uploaded image: {app.image_path.split('/').pop()}
+                              </p>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeImage(index)}
+                              >
+                                <X className="mr-2 h-4 w-4" />
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+                        ) : app.image_url && !app.image_path ? (
+                          <div className="space-y-2">
+                            <div className="relative w-full aspect-video border rounded-lg overflow-hidden bg-muted">
+                              <img 
+                                src={app.image_url} 
+                                alt={app.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  console.error("Image failed to load:", app.image_url);
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              External image URL (edit below to change)
+                            </p>
                           </div>
                         ) : (
                           <div className="space-y-2">

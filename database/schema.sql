@@ -28,13 +28,19 @@ CREATE TABLE IF NOT EXISTS apps (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   category TEXT NOT NULL,
-  download_link TEXT NOT NULL,
+  download_link TEXT,
   image_url TEXT,
+  image_path TEXT,
+  file_path TEXT,
+  file_name TEXT,
+  file_size BIGINT,
+  file_type TEXT CHECK (file_type IN ('apk', 'ipa', 'external') OR file_type IS NULL),
   tags TEXT[],
   display_order INTEGER DEFAULT 0,
   downloads INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT apps_download_required CHECK (download_link IS NOT NULL OR file_path IS NOT NULL)
 );
 
 -- Create messages table for contact form submissions
@@ -56,16 +62,20 @@ ALTER TABLE apps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users
+DROP POLICY IF EXISTS "Users can view own profile" ON users;
 CREATE POLICY "Users can view own profile" ON users
   FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
 CREATE POLICY "Users can update own profile" ON users
   FOR UPDATE USING (auth.uid() = id);
 
 -- RLS Policies for site_content (public read, admin write)
+DROP POLICY IF EXISTS "Anyone can view site content" ON site_content;
 CREATE POLICY "Anyone can view site content" ON site_content
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Only admins can modify site content" ON site_content;
 CREATE POLICY "Only admins can modify site content" ON site_content
   FOR ALL USING (
     EXISTS (
@@ -75,9 +85,11 @@ CREATE POLICY "Only admins can modify site content" ON site_content
   );
 
 -- RLS Policies for apps (public read, admin write)
+DROP POLICY IF EXISTS "Anyone can view apps" ON apps;
 CREATE POLICY "Anyone can view apps" ON apps
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Only admins can modify apps" ON apps;
 CREATE POLICY "Only admins can modify apps" ON apps
   FOR ALL USING (
     EXISTS (
@@ -87,6 +99,7 @@ CREATE POLICY "Only admins can modify apps" ON apps
   );
 
 -- RLS Policies for messages (admins only)
+DROP POLICY IF EXISTS "Only admins can view messages" ON messages;
 CREATE POLICY "Only admins can view messages" ON messages
   FOR SELECT USING (
     EXISTS (
@@ -95,9 +108,11 @@ CREATE POLICY "Only admins can view messages" ON messages
     )
   );
 
+DROP POLICY IF EXISTS "Anyone can insert messages" ON messages;
 CREATE POLICY "Anyone can insert messages" ON messages
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Only admins can update messages" ON messages;
 CREATE POLICY "Only admins can update messages" ON messages
   FOR UPDATE USING (
     EXISTS (
@@ -116,12 +131,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Add triggers for updated_at
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_site_content_updated_at ON site_content;
 CREATE TRIGGER update_site_content_updated_at BEFORE UPDATE ON site_content
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_apps_updated_at ON apps;
 CREATE TRIGGER update_apps_updated_at BEFORE UPDATE ON apps
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -136,6 +154,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to automatically create user record on auth.users insert
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
@@ -150,19 +169,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Insert initial data
+-- Insert initial data (use ON CONFLICT to avoid errors if data already exists)
 INSERT INTO site_content (section_name, title, subtitle, content, metadata) VALUES
 ('home_hero', 'Blessings Chilemba', 'Developer & App Creator', 
  '{"description": "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users."}',
  '{"buttons": [{"text": "Learn More", "href": "#about"}, {"text": "View My Apps", "href": "#apps"}]}'),
 
 ('about', 'About Me', 'Get to know me better',
- '{"description": "Passionate about creating digital solutions that solve real-world problems. I specialize in developing innovative applications that combine elegant design with robust functionality. With a keen eye for detail and a love for clean code, I bring ideas to life through technology.\n\nWhether it''s a mobile app, a web application, or a creative tool, I strive to deliver exceptional user experiences that make a meaningful impact."}',
+ '{"description": "Passionate about creating digital solutions that solve real-world problems. I specialize in developing innovative applications that combine elegant design with robust functionality. With a keen eye for detail and a love for clean code, I bring ideas to life through technology.\n\nWhether it''s a mobile app, a web application, or a creative tool, I strive to deliver exceptional user experiences that make a meaningful impact.", "yearsOfExperience": 5, "tools": [{"name": "Flutter", "icon": "💙", "category": "Framework"}, {"name": "React", "icon": "⚛️", "category": "Library"}, {"name": "Next.js", "icon": "▲", "category": "Framework"}, {"name": "TypeScript", "icon": "🔷", "category": "Language"}, {"name": "JavaScript", "icon": "🟨", "category": "Language"}, {"name": "Node.js", "icon": "🟢", "category": "Runtime"}, {"name": "Python", "icon": "🐍", "category": "Language"}, {"name": "Dart", "icon": "🎯", "category": "Language"}, {"name": "Tailwind CSS", "icon": "🌊", "category": "Framework"}, {"name": "Supabase", "icon": "⚡", "category": "Database"}, {"name": "Firebase", "icon": "🔥", "category": "Backend"}, {"name": "Git", "icon": "📦", "category": "Version Control"}]}',
  '{"skills": [{"icon": "Code", "title": "Web Development", "description": "Building responsive and performant web applications with modern frameworks."}, {"icon": "Smartphone", "title": "Mobile Development", "description": "Creating native and cross-platform mobile apps with excellent UX."}, {"icon": "Palette", "title": "UI/UX Design", "description": "Designing beautiful and intuitive user interfaces that users love."}, {"icon": "Rocket", "title": "Innovation", "description": "Always exploring new technologies and pushing the boundaries of what''s possible."}]}'),
 
 ('contact', 'Contact', 'Get in touch with me',
  '{"description": "Get in touch with me for collaboration, questions, or just to say hello! Feel free to reach out through any of these channels. I''m always open to discussing new opportunities.", "email": "contact@blessings.com", "social": [{"name": "Github", "url": "https://github.com"}, {"name": "Linkedin", "url": "https://linkedin.com"}, {"name": "Twitter", "url": "https://twitter.com"}]}',
- NULL);
+ NULL)
+ON CONFLICT (section_name) DO NOTHING;
 
 -- Enable insert for public on auth trigger function
 GRANT USAGE ON SCHEMA public TO anon, authenticated;

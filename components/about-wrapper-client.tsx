@@ -3,14 +3,17 @@
 import { Card } from "./ui/card";
 import { ScrollAnimation } from "./scroll-animation";
 import { AboutSectionClient } from "./about-section-client";
+import { ToolsSection } from "./tools-section";
 import Image from "next/image";
 
 interface AboutWrapperClientProps {
   description: string;
   skills: any[];
+  tools?: any[];
+  yearsOfExperience?: number;
 }
 
-export function AboutWrapperClient({ description, skills }: AboutWrapperClientProps) {
+export function AboutWrapperClient({ description, skills, tools = [], yearsOfExperience }: AboutWrapperClientProps) {
   return (
     <>
       <ScrollAnimation>
@@ -41,10 +44,28 @@ export function AboutWrapperClient({ description, skills }: AboutWrapperClientPr
               <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
                 {description}
               </p>
+              
+              {/* Years of Experience */}
+              {yearsOfExperience && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                      <span className="text-xl sm:text-2xl font-bold text-primary">{yearsOfExperience}+</span>
+                    </div>
+                    <div>
+                      <p className="text-sm sm:text-base font-semibold">Years of Experience</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Building amazing solutions</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </ScrollAnimation>
+
+      {/* Tools Section - Displayed below experience */}
+      {tools && tools.length > 0 && <ToolsSection tools={tools} />}
 
       <AboutSectionClient skills={skills} />
     </>
