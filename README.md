@@ -1,4 +1,4 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
+<a href="https://github.com/revertechs/official-website">
   <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://sggcikgevvwpnrzwoofb.supabase.co/storage/v1/object/public/app-image/rever-website.png">
   <h1 align="center">Rever's Official Website</h1>
 </a>
