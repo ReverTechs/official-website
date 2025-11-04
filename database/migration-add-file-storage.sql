@@ -8,13 +8,17 @@ ADD COLUMN IF NOT EXISTS file_path TEXT,
 ADD COLUMN IF NOT EXISTS file_name TEXT,
 ADD COLUMN IF NOT EXISTS file_size BIGINT,
 ADD COLUMN IF NOT EXISTS file_type TEXT CHECK (file_type IN ('apk', 'ipa', 'external') OR file_type IS NULL),
-ADD COLUMN IF NOT EXISTS image_path TEXT;
+ADD COLUMN IF NOT EXISTS image_path TEXT,
+ADD COLUMN IF NOT EXISTS image_url TEXT;
 
 -- Add comment to explain file_type values
 COMMENT ON COLUMN apps.file_type IS 'File type: apk (Android), ipa (iOS), or external (external download link)';
 
 -- Add comment for image_path
 COMMENT ON COLUMN apps.image_path IS 'Path to uploaded app image in storage bucket app-image';
+
+-- Add comment for image_url
+COMMENT ON COLUMN apps.image_url IS 'Public URL to the app image (either from storage or external URL)';
 
 -- Make download_link nullable since we can now use file uploads
 -- This will fail gracefully if already nullable, so we catch and ignore

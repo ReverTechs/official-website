@@ -81,20 +81,110 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (existingApp?.image_path) {
-      // Delete old image
-      await supabase.storage.from("app-image").remove([existingApp.image_path]);
+      // Delete old image from storage
+      const { error: deleteError } = await supabase.storage
+        .from("app-image")
+        .remove([existingApp.image_path]);
+      
+      if (deleteError) {
+        console.warn("Warning: Failed to delete old image:", deleteError.message);
+        // Continue with upload even if old image deletion fails
+      }
     }
 
     // Upload file to Supabase Storage
+    // Supabase accepts File, Blob, ArrayBuffer, or Uint8Array
+    // Using File directly for consistency with other upload routes
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("app-image")
       .upload(filePath, file, {
         contentType: file.type || `image/${fileExtension}`,
         upsert: false,
+        cacheControl: '3600',
       });
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
+      // Check if it's a duplicate file error
+      if (uploadError.message?.includes('already exists')) {
+        // Try with a new timestamp
+        const retryTimestamp = Date.now();
+        const retryFileName = `${retryTimestamp}_${sanitizedFileName}`;
+        const retryFilePath = `apps/${appId}/${retryFileName}`;
+        
+        const { data: retryUploadData, error: retryUploadError } = await supabase.storage
+          .from("app-image")
+          .upload(retryFilePath, file, {
+            contentType: file.type || `image/${fileExtension}`,
+            upsert: false,
+            cacheControl: '3600',
+          });
+
+        if (retryUploadError) {
+          return NextResponse.json(
+            { error: `Upload failed: ${retryUploadError.message}` },
+            { status: 500 }
+          );
+        }
+
+        // Use the retry path if successful
+        const { data: retryUrlData } = supabase.storage
+          .from("app-image")
+          .getPublicUrl(retryFilePath);
+
+        const { error: retryUpdateError } = await supabase
+          .from("apps")
+          .update({
+            image_path: retryFilePath,
+            image_url: retryUrlData.publicUrl,
+          })
+          .eq("id", appId);
+
+        if (retryUpdateError) {
+          // Check if it's a schema cache issue
+          if (retryUpdateError.message?.includes("image_url") || retryUpdateError.message?.includes("schema cache")) {
+            // Try fallback with just image_path
+            const { error: fallbackError } = await supabase
+              .from("apps")
+              .update({ image_path: retryFilePath })
+              .eq("id", appId);
+            
+            if (fallbackError) {
+              await supabase.storage.from("app-image").remove([retryFilePath]);
+              return NextResponse.json(
+                { 
+                  error: `Failed to update app. Please run the migration to add the image_url column: ${retryUpdateError.message}`,
+                  migrationHint: "Run the SQL in database/migration-add-image-url.sql in your Supabase SQL Editor"
+                },
+                { status: 500 }
+              );
+            }
+            
+            // Return success with warning
+            return NextResponse.json({
+              success: true,
+              filePath: retryFilePath,
+              fileName: file.name,
+              publicUrl: retryUrlData.publicUrl,
+              warning: "image_url column missing - only image_path was updated. Please run migration."
+            });
+          }
+          
+          await supabase.storage.from("app-image").remove([retryFilePath]);
+          return NextResponse.json(
+            { error: `Failed to update app: ${retryUpdateError.message}` },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({
+          success: true,
+          filePath: retryFilePath,
+          fileName: file.name,
+          publicUrl: retryUrlData.publicUrl,
+        });
+      }
+
       return NextResponse.json(
         { error: `Upload failed: ${uploadError.message}` },
         { status: 500 }
@@ -107,21 +197,50 @@ export async function POST(request: NextRequest) {
       .getPublicUrl(filePath);
 
     // Update the app record with image information
+    // First try to update with both columns
+    let updateData: any = {
+      image_path: filePath,
+      image_url: urlData.publicUrl,
+    };
+    
     const { error: updateError } = await supabase
       .from("apps")
-      .update({
-        image_path: filePath,
-        image_url: urlData.publicUrl,
-      })
+      .update(updateData)
       .eq("id", appId);
 
     if (updateError) {
-      // If update fails, delete the uploaded file
-      await supabase.storage.from("app-image").remove([filePath]);
-      return NextResponse.json(
-        { error: `Failed to update app: ${updateError.message}` },
-        { status: 500 }
-      );
+      // If update fails due to missing column, try to add it first
+      if (updateError.message?.includes("image_url") || updateError.message?.includes("schema cache")) {
+        console.warn("Schema cache issue detected, attempting to refresh...");
+        
+        // Try updating with just image_path first (in case image_url column doesn't exist yet)
+        const { error: fallbackError } = await supabase
+          .from("apps")
+          .update({ image_path: filePath })
+          .eq("id", appId);
+        
+        if (fallbackError) {
+          // If both fail, delete the uploaded file
+          await supabase.storage.from("app-image").remove([filePath]);
+          return NextResponse.json(
+            { 
+              error: `Failed to update app. Please run the migration to add the image_url column: ${updateError.message}`,
+              migrationHint: "Run the SQL in database/migration-add-image-url.sql in your Supabase SQL Editor"
+            },
+            { status: 500 }
+          );
+        }
+        
+        // If fallback succeeded, warn that image_url wasn't set
+        console.warn("image_url column missing - only image_path was updated. Please run migration.");
+      } else {
+        // If update fails for other reasons, delete the uploaded file
+        await supabase.storage.from("app-image").remove([filePath]);
+        return NextResponse.json(
+          { error: `Failed to update app: ${updateError.message}` },
+          { status: 500 }
+        );
+      }
     }
 
     return NextResponse.json({
@@ -189,6 +308,8 @@ export async function DELETE(request: NextRequest) {
 
       if (deleteError) {
         console.error("Delete error:", deleteError);
+        // Continue with database update even if storage deletion fails
+        // The image might have already been deleted or not exist
       }
     }
 

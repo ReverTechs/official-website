@@ -468,6 +468,7 @@ export function ContentManager({
     }
 
     setUploadingImage({ ...uploadingImage, [appIndex]: true });
+    setMessage(null); // Clear previous messages
 
     try {
       const formData = new FormData();
@@ -495,9 +496,12 @@ export function ContentManager({
       setAppsData(newApps);
 
       setMessage({ type: "success", text: "Image uploaded successfully!" });
+      
+      // Refresh to get updated data from server
       router.refresh();
     } catch (error: any) {
-      setMessage({ type: "error", text: error.message || "Upload failed" });
+      console.error("Image upload error:", error);
+      setMessage({ type: "error", text: error.message || "Upload failed. Please check the console for details." });
     } finally {
       setUploadingImage({ ...uploadingImage, [appIndex]: false });
     }
@@ -507,6 +511,11 @@ export function ContentManager({
     const app = appsData[appIndex];
     
     if (!app.id) return;
+
+    // Confirm deletion
+    if (!confirm("Are you sure you want to delete this image? This action cannot be undone.")) {
+      return;
+    }
 
     try {
       const response = await fetch(`/api/apps/upload-image?appId=${app.id}`, {
@@ -527,10 +536,11 @@ export function ContentManager({
       };
       setAppsData(newApps);
 
-      setMessage({ type: "success", text: "Image removed successfully!" });
+      setMessage({ type: "success", text: "Image deleted successfully!" });
       router.refresh();
     } catch (error: any) {
-      setMessage({ type: "error", text: error.message });
+      console.error("Image deletion error:", error);
+      setMessage({ type: "error", text: error.message || "Failed to delete image" });
     }
   };
 
@@ -946,19 +956,52 @@ export function ContentManager({
                                 }}
                               />
                             </div>
-                            <div className="flex items-center gap-2">
-                              <p className="text-xs text-muted-foreground flex-1">
-                                Uploaded image: {app.image_path.split('/').pop()}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-xs text-muted-foreground flex-1 min-w-0 truncate">
+                                Uploaded: {app.image_path.split('/').pop()}
                               </p>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeImage(index)}
-                              >
-                                <X className="mr-2 h-4 w-4" />
-                                Remove
-                              </Button>
+                              <div className="flex gap-2">
+                                <label
+                                  htmlFor={`image-upload-${index}`}
+                                  className="cursor-pointer"
+                                >
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={uploadingImage[index] || !app.id}
+                                    asChild
+                                  >
+                                    <span>
+                                      <Edit3 className="mr-2 h-4 w-4" />
+                                      {uploadingImage[index] ? "Uploading..." : "Update"}
+                                    </span>
+                                  </Button>
+                                  <input
+                                    id={`image-upload-${index}`}
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        handleImageUpload(index, file);
+                                      }
+                                    }}
+                                    disabled={uploadingImage[index] || !app.id}
+                                  />
+                                </label>
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => removeImage(index)}
+                                  disabled={uploadingImage[index]}
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ) : app.image_url && !app.image_path ? (
@@ -974,9 +1017,66 @@ export function ContentManager({
                                 }}
                               />
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                              External image URL (edit below to change)
-                            </p>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-xs text-muted-foreground flex-1">
+                                External image URL
+                              </p>
+                              <div className="flex gap-2">
+                                <label
+                                  htmlFor={`image-upload-${index}`}
+                                  className="cursor-pointer"
+                                >
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={uploadingImage[index] || !app.id}
+                                    asChild
+                                  >
+                                    <span>
+                                      <Upload className="mr-2 h-4 w-4" />
+                                      {uploadingImage[index] ? "Uploading..." : "Upload Image"}
+                                    </span>
+                                  </Button>
+                                  <input
+                                    id={`image-upload-${index}`}
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        handleImageUpload(index, file);
+                                      }
+                                    }}
+                                    disabled={uploadingImage[index] || !app.id}
+                                  />
+                                </label>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newApps = [...appsData];
+                                    newApps[index].image_url = "";
+                                    setAppsData(newApps);
+                                  }}
+                                >
+                                  <X className="mr-2 h-4 w-4" />
+                                  Clear
+                                </Button>
+                              </div>
+                            </div>
+                            <Input
+                              value={app.image_url || ""}
+                              onChange={(e) => {
+                                const newApps = [...appsData];
+                                newApps[index].image_url = e.target.value;
+                                setAppsData(newApps);
+                              }}
+                              placeholder="https://example.com/image.jpg"
+                              className="text-sm"
+                            />
                           </div>
                         ) : (
                           <div className="space-y-2">
