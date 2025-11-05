@@ -18,8 +18,11 @@ export async function AppsSection() {
   }
 
   return (
-    <section id="apps" className="py-12 sm:py-16 md:py-20 lg:py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="apps" className="py-16 sm:py-20 md:py-24 lg:py-32 relative overflow-hidden">
+      {/* Subtle background gradient for depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <AppsWrapperClient apps={apps} />
       </div>
     </section>
