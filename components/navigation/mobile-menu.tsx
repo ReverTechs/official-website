@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Info, AppWindow, Mail, Sun, Moon, Laptop } from "lucide-react";
+import { Menu, X, Info, AppWindow, Mail, Sun, Moon, Laptop, HomeIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
+  { href: "#home", label: "Home", icon: HomeIcon },
   { href: "#about", label: "About", icon: Info },
   { href: "#apps", label: "Apps", icon: AppWindow },
   { href: "#contact", label: "Contact", icon: Mail },
