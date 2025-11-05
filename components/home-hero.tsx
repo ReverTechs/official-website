@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
+import { Spotlight } from "./spotlight";
 
 export async function HomeHero() {
   let title = "Blessings Chilemba";
@@ -28,6 +29,8 @@ export async function HomeHero() {
     <section className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-8 sm:pb-0">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+      {/* Interactive spotlight */}
+      <Spotlight className="absolute inset-0" />
       
       {/* Animated Circles */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />

@@ -14,6 +14,20 @@ export async function updateSession(request: NextRequest) {
   }
 
   try {
+    // Public routes should not perform network calls to Supabase to avoid
+    // blocking on connectivity issues. We allow these through immediately.
+    const publicRoutes = ["/", "/instruments"];
+    const pathname = request.nextUrl.pathname;
+    const isPublicRoute =
+      publicRoutes.includes(pathname) ||
+      pathname.startsWith("/auth") ||
+      pathname.startsWith("/login") ||
+      pathname.startsWith("/api");
+
+    if (isPublicRoute) {
+      return supabaseResponse;
+    }
+
     // With Fluid compute, don't put this client in a global environment
     // variable. Always create a new one on each request.
     const supabase = createServerClient(
@@ -48,16 +62,8 @@ export async function updateSession(request: NextRequest) {
     const { data } = await supabase.auth.getClaims();
     const user = data?.claims;
 
-    // Define public routes that don't require authentication
-    const publicRoutes = ["/", "/instruments"];
-    const isPublicRoute = 
-      publicRoutes.includes(request.nextUrl.pathname) ||
-      request.nextUrl.pathname.startsWith("/auth") ||
-      request.nextUrl.pathname.startsWith("/login") ||
-      request.nextUrl.pathname.startsWith("/api");
-
-    // Only protect non-public routes when user is not authenticated
-    if (!isPublicRoute && !user) {
+    // Only protect routes when user is not authenticated
+    if (!user) {
       // no user, redirect to login page
       const url = request.nextUrl.clone();
       url.pathname = "/auth/login";

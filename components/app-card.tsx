@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -5,6 +7,7 @@ import { Download, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { formatDownloads } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { useRef, useState } from "react";
 
 interface AppCardProps {
   title: string;
@@ -21,6 +24,28 @@ interface AppCardProps {
 }
 
 export function AppCard({ title, description, category, downloadLink, tags, id, filePath, imageUrl, imagePath, downloads = 0, featured = false }: AppCardProps) {
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = cardRef.current;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePos({ x, y });
+
+    const rotateMax = 8; // degrees
+    const rotateY = ((x / rect.width) - 0.5) * (rotateMax * 2);
+    const rotateX = -((y / rect.height) - 0.5) * (rotateMax * 2);
+    target.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+  };
+
+  const handleMouseLeave = () => {
+    const target = cardRef.current;
+    if (!target) return;
+    target.style.transform = "rotateX(0deg) rotateY(0deg)";
+  };
   const handleDownload = () => {
     // If file_path exists, use the download API route
     if (filePath && id) {
@@ -121,13 +146,26 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
 
   // Regular card style (Apple App Store standard cards)
   return (
-    <Card className={cn(
+    <div
+      className="[perspective:1000px]"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <Card ref={cardRef} className={cn(
       "overflow-hidden border-0 bg-card/50 backdrop-blur-sm",
       "hover:shadow-2xl transition-all duration-500 ease-out",
       "group cursor-pointer",
       "rounded-2xl",
-      "hover:-translate-y-2"
+      "hover:-translate-y-2",
+      "[transform-style:preserve-3d]"
     )}>
+      {/* Dynamic light highlight following the cursor */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, hsl(var(--primary)/0.15), transparent 40%)`
+        }}
+      />
       {/* App Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5">
         {hasImage && displayImage ? (
@@ -213,6 +251,7 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
         </div>
       </div>
     </Card>
+    </div>
   );
 }
 

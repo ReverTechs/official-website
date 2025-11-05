@@ -10,14 +10,22 @@ import { createClient } from "@/lib/supabase/client";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+      const doc = document.documentElement;
+      const scrollTop = doc.scrollTop || window.scrollY;
+      const scrollHeight = doc.scrollHeight - doc.clientHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      setScrollProgress(progress);
     };
 
     window.addEventListener("scroll", handleScroll);
+    // Initialize on mount
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -47,6 +55,13 @@ export function Navbar() {
           : "bg-background/80 backdrop-blur-md border-b border-border"
       }`}
     >
+      {/* Scroll progress bar */}
+      <div className="absolute left-0 right-0 top-0 h-[2px] bg-transparent">
+        <div
+          className="h-full bg-gradient-to-r from-primary to-primary/60 transition-apple"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
