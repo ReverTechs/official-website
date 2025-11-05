@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/supabase/server";
-import { MessagesList } from "@/components/admin/messages-list";
+import { MessagesList } from "@/components/features/admin/messages-list";
 
 export default async function AdminMessagesPage() {
   const { supabase, user } = await ensureUserProfile();

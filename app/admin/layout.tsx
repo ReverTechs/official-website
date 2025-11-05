@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/supabase/server";
-import { AdminNavbar } from "@/components/admin/admin-navbar";
+import { AdminNavbar } from "@/components/features/admin/admin-navbar";
 
 export default async function AdminLayout({
   children,

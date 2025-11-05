@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 /**
@@ -40,6 +41,24 @@ export async function createClient() {
       },
     },
   );
+}
+
+/**
+ * Creates a public Supabase client without cookies for anonymous reads.
+ * Use this for public content that doesn't require authentication.
+ * This allows static generation of pages.
+ */
+export function createPublicClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      "Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+    );
+  }
+
+  return createSupabaseClient(supabaseUrl, supabaseKey);
 }
 
 export async function ensureUserProfile() {

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/buttons/button";
 import { 
   FileText, 
   MessageSquare, 

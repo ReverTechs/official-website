@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/supabase/server";
-import { ContentManager } from "@/components/admin/content-manager";
+import { ContentManager } from "@/components/features/admin/content-manager";
 
 export default async function AdminContentPage() {
   const { supabase, user } = await ensureUserProfile();
