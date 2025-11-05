@@ -37,27 +37,27 @@ export function MobileMenu() {
               text-foreground
             "
           >
-            <Link
-              href="#about"
-              className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="#apps"
-              className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              Apps
-            </Link>
-            <Link
-              href="#contact"
-              className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
+           <Link
+                href="#about"
+                className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-bold text-sky-500"
+                onClick={() => setIsOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="#apps"
+                className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-bold text-sky-500"
+                onClick={() => setIsOpen(false)}
+              >
+                Apps
+              </Link>
+              <Link
+                href="#contact"
+                className="block py-3 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors font-bold text-sky-500"
+                onClick={() => setIsOpen(false)}
+              >
+                Contact
+              </Link>
             <div className="pt-4 border-t border-border">
               <ThemeSwitcher />
             </div>

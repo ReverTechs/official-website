@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export async function HomeHero() {
   let title = "Blessings Chilemba";
-  let subtitle = "Developer & App Creator";
+  let subtitle = "Developer & UX Designer";
   let description = "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users.";
 
   try {

@@ -62,7 +62,7 @@ export function ContactForm() {
             Message Sent!
           </h3>
           <p className="text-green-600 dark:text-green-500">
-            Thank you for your message. I&apos;ll get back to you soon.
+            Thank you for your message. I&apos;ll get back to you soon. Through your email.
           </p>
         </div>
       </Card>

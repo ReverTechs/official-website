@@ -53,11 +53,11 @@ export function Navbar() {
             <ProfileAvatar />
             <Link 
               href="/" 
-              className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent hover:opacity-80 transition-opacity flex items-center gap-2 group"
+              className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent hover:opacity-40 transition-opacity flex items-center gap-2 group"
             >
               <Home className="h-5 w-5 sm:h-6 sm:w-6 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
               <span className="group-hover:translate-x-2 transition-transform duration-200 hidden sm:inline">Blessings Rever Chilemba</span>
-              <span className="group-hover:translate-x-2 transition-transform duration-200 sm:hidden">REVER</span>
+              <span className="group-hover:translate-x-2 transition-transform duration-200 sm:hidden">REVER ENG</span>
             </Link>
           </div>
           
