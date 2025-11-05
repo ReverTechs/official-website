@@ -13,12 +13,13 @@ type Testimonial = {
 
 const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
-    quote:
-      "Working with Blessings was effortless. The attention to detail and product polish felt enterprise-grade.",
-    author: "Amelia Hart",
-    role: "Head of Product, Northstar",
-    avatar: "/images/profile.jpg",
-  },
+  quote:
+    "The authentication flow Blessings designed was both secure and intuitive. Our users noticed the difference.",
+  author: "Priya Desai",
+  role: "Lead Engineer, VaultSecure",
+  avatar: "/section/ceo3.png"
+},
+
   {
     quote:
       "Shipping velocity without sacrificing quality. Exactly what we needed to hit our launch window.",
@@ -26,11 +27,61 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     role: "CTO, Lumen Labs",
   },
   {
+  quote:
+    "Blessings brought clarity and momentum to our mobile strategy. The Flutter implementation was seamless.",
+  author: "Jared Lin",
+  role: "CTO, Horizon Labs",
+  avatar: "/section/ceo2.png"
+},
+  {
+    quote:
+      "Working with Blessings was effortless. The attention to detail and product polish felt enterprise-grade.",
+    author: "Amelia Hart",
+    role: "Head of Product, Northstar",
+   // avatar: "/images/profile.jpg",
+   avatar: "/section/ceo1.jpeg"
+  },
+{
+  quote:
+    "From deployment to debugging, Blessings handled every challenge with precision and calm. A true professional.",
+  author: "Carlos Mendes",
+  role: "DevOps Manager, CloudNest",
+  avatar: "/section/ceo4.png"
+},
+{
+  quote:
+    "Blessings doesn’t just write code—he engineers experiences. Our Next.js app now feels world-class.",
+  author: "Lena Cho",
+  role: "UX Director, NovaFrame",
+  avatar: "/section/ceo5.png"
+},
+  {
     quote:
       "Thoughtful UX and clean architecture. Code reviews became a formality.",
     author: "Priya Singh",
     role: "Engineering Manager, Aether",
   },
+  {
+  quote:
+    "Blessings has a rare ability to simplify complex systems. Our onboarding flow is now lightning-fast.",
+  author: "Tariq Al-Mansour",
+  role: "Product Architect, StreamlineX",
+  avatar: "/section/ceo6.jpg"
+},
+{
+  quote:
+    "Every sprint with Blessings felt like a leap forward. The codebase is cleaner and more scalable than ever.",
+  author: "Emily Zhang",
+  role: "Engineering Lead, BrightLayer",
+  avatar: "/section/ceo7.jpg"
+},
+{
+  quote:
+    "Blessings turned our fragmented deployment pipeline into a well-oiled machine. Netlify has never run smoother.",
+  author: "Noah Kim",
+  role: "Platform Engineer, OrbitStack",
+  avatar: "/section/ceo8.jpg"
+}
 ];
 
 export function Testimonials({ items = DEFAULT_TESTIMONIALS }: { items?: Testimonial[] }) {

@@ -81,7 +81,7 @@ export function ContactForm() {
             required
             value={formData.name}
             onChange={handleChange}
-            placeholder="Chris Lungu"
+            placeholder="e.g. Xtina Lungu"
             className="bg-background"
           />
         </div>
@@ -94,7 +94,7 @@ export function ContactForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            placeholder="john@example.com"
+            placeholder="you@example.com"
             className="bg-background"
           />
         </div>
