@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://reverbc.dev/sitemap.xml
+Sitemap: https://rever-official.netlify.app/sitemap.xml
 
 
 

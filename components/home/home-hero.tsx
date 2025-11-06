@@ -1,6 +1,7 @@
 import { createPublicClient } from "@/lib/supabase/server";
 import Image from "next/image";
 import { Spotlight } from "../shared/spotlight";
+import TypedDescription from "./typed-description";
 
 export async function HomeHero() {
   let title = "Blessings Chilemba";
@@ -65,7 +66,7 @@ export async function HomeHero() {
 
         <div className="space-y-4 sm:space-y-6 mt-6 sm:mt-8 animate-fade-in-up">
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
-            {description}
+            <TypedDescription text={description} />
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2">
