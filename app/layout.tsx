@@ -10,17 +10,17 @@ function getDefaultUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
   }
-  
+
   // Check for Vercel deployment
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  
+
   // Check for Netlify deployment
   if (process.env.NETLIFY && process.env.DEPLOY_PRIME_URL) {
     return process.env.DEPLOY_PRIME_URL;
   }
-  
+
   // Fallback to localhost
   return "http://localhost:3000";
 }
@@ -29,8 +29,9 @@ const defaultUrl = getDefaultUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Blessings Rever Chilemba - Developer & App Creator",
-  description: "Official website of Blessings Chilemba. Discover innovative apps and digital solutions. Download the latest mobile and web applications.",
+  title: "Blessings Rever Chilemba - Fullstack Developer",
+  description:
+    "Official website of Blessings Chilemba. Discover innovative apps and digital solutions. Download the latest mobile and web applications.",
 };
 
 const geistSans = Geist({

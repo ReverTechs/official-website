@@ -5,8 +5,9 @@ import TypedDescription from "./typed-description";
 
 export async function HomeHero() {
   let title = "Blessings Chilemba";
-  let subtitle = "Developer & UX Designer";
-  let description = "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users.";
+  let subtitle = "Fullstack Developer & UX Designer";
+  let description =
+    "Crafting digital experiences that make a difference. Building innovative apps and solutions that empower users.";
 
   try {
     const supabase = createPublicClient();
@@ -32,7 +33,7 @@ export async function HomeHero() {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
       {/* Interactive spotlight */}
       <Spotlight className="absolute inset-0" />
-      
+
       {/* Animated Circles */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
@@ -58,7 +59,7 @@ export async function HomeHero() {
               {title}
             </span>
           </h1>
-          
+
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground font-light px-2">
             {subtitle}
           </p>
@@ -95,4 +96,3 @@ export async function HomeHero() {
     </section>
   );
 }
-
