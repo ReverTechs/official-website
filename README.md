@@ -8,18 +8,18 @@
 </p>
 
 <p align="center">
-  <a href="https://rever-official.netlify.app/"><strong>Home</strong></a> ·
-  <a href="https://rever-official.netlify.app/#about"><strong>About</strong></a> ·
-  <a href="https://rever-official.netlify.app/#apps"><strong>My Apps</strong></a> ·
-  <a href="https://rever-official.netlify.app/#contact"><strong>Reach out</strong></a> ·
-  <a href="https://rever-official.netlify.app/"><strong>Feedback and issues</strong></a>
+  <a href="https://reverbc-official.netlify.app/"><strong>Home</strong></a> ·
+  <a href="https://reverbc-official.netlify.app/#about"><strong>About</strong></a> ·
+  <a href="https://reverbc-official.netlify.app/#apps"><strong>My Apps</strong></a> ·
+  <a href="https://reverbc-official.netlify.app/#contact"><strong>Reach out</strong></a> ·
+  <a href="https://reverbc-official.netlify.app/"><strong>Feedback and issues</strong></a>
   
 </p>
 <br/>
 
 ## Features
 
-- About this site [REVER BC](https://rever-official.netlify.app/) official
+- About this site [REVER BC](https://reverbc-official.netlify.app/) official
   - About
   - Contact
   - My exprience
@@ -27,12 +27,12 @@
   - Apps
   - It just works!
 - Simple to use
-- My portifolio [About Blessings Rever Chilemba](https://rever-official.netlify.app/)
+- My portifolio [About Blessings Rever Chilemba](https://reverbc-official.netlify.app/)
 
 
 ## Demo
 
-You can view a fully working demo at [rever official](https://rever-official.netlify.app/).
+You can view a fully working demo at [rever official](https://reverbc-official.netlify.app/).
 
 ## Deploy to Vercel
 
