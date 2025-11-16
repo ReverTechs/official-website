@@ -109,11 +109,11 @@ export function Testimonials({ items = DEFAULT_TESTIMONIALS }: { items?: Testimo
         </div>
 
         <div
-          className="relative bg-card border border-border rounded-3xl overflow-hidden shadow-xl"
+          className="relative bg-card/60 backdrop-blur-sm border border-border/40 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          <div className="relative px-6 sm:px-10 md:px-14 py-10 sm:py-14 md:py-16">
+          <div className="relative px-8 sm:px-12 md:px-16 py-12 sm:py-16 md:py-20">
             {/* Ambient light */}
             <div className="pointer-events-none absolute -inset-x-10 -top-20 h-40 bg-gradient-to-b from-primary/15 to-transparent blur-2xl" />
 
@@ -125,33 +125,33 @@ export function Testimonials({ items = DEFAULT_TESTIMONIALS }: { items?: Testimo
                   i === index ? "opacity-100" : "opacity-0 absolute inset-0"
                 )}
               >
-                <blockquote className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight text-balance">
-                  “{t.quote}”
+                <blockquote className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight tracking-tight text-balance">
+                  "{t.quote}"
                 </blockquote>
-                <figcaption className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-4">
+                <figcaption className="mt-8 sm:mt-10 flex items-center gap-4 sm:gap-5">
                   {t.avatar && (
-                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden ring-2 ring-primary/20">
+                    <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full overflow-hidden ring-2 ring-border/30 shadow-sm">
                       <Image src={t.avatar} alt={t.author} fill className="object-cover" />
                     </div>
                   )}
                   <div>
-                    <div className="text-sm sm:text-base font-semibold">{t.author}</div>
-                    <div className="text-xs sm:text-sm text-muted-foreground">{t.role}</div>
+                    <div className="text-base sm:text-lg font-semibold tracking-tight">{t.author}</div>
+                    <div className="text-sm sm:text-base text-muted-foreground">{t.role}</div>
                   </div>
                 </figcaption>
               </figure>
             ))}
 
             {/* Progress dots */}
-            <div className="mt-8 sm:mt-10 flex items-center justify-center gap-2">
+            <div className="mt-10 sm:mt-12 flex items-center justify-center gap-2">
               {items.map((_, i) => (
                 <button
                   key={i}
                   aria-label={`Go to testimonial ${i + 1}`}
                   onClick={() => setIndex(i)}
                   className={cn(
-                    "h-1.5 w-6 rounded-full transition-all",
-                    i === index ? "bg-primary w-10" : "bg-muted"
+                    "h-1.5 w-6 rounded-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    i === index ? "bg-primary w-10" : "bg-muted/50 hover:bg-muted"
                   )}
                 />)
               )}

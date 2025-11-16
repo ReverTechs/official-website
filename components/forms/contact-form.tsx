@@ -55,13 +55,15 @@ export function ContactForm() {
 
   if (isSubmitted) {
     return (
-      <Card className="p-8 border-2 border-green-500 bg-green-50 dark:bg-green-950/20">
-        <div className="flex flex-col items-center justify-center text-center space-y-4">
-          <CheckCircle className="w-16 h-16 text-green-600" />
-          <h3 className="text-2xl font-semibold text-green-700 dark:text-green-400">
+      <Card className="p-12 border-green-500/30 bg-green-50/50 dark:bg-green-950/10 backdrop-blur-sm">
+        <div className="flex flex-col items-center justify-center text-center space-y-6">
+          <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center">
+            <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+          </div>
+          <h3 className="text-3xl font-semibold text-green-700 dark:text-green-400 tracking-tight">
             Message Sent!
           </h3>
-          <p className="text-green-600 dark:text-green-500">
+          <p className="text-base text-green-600/80 dark:text-green-500/80 max-w-md leading-relaxed">
             Thank you for your message. I&apos;ll get back to you soon. Through your email.
           </p>
         </div>
@@ -70,10 +72,10 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Your Name</Label>
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-3">
+          <Label htmlFor="name" className="text-base font-medium">Your Name</Label>
           <Input
             id="name"
             name="name"
@@ -82,11 +84,10 @@ export function ContactForm() {
             value={formData.name}
             onChange={handleChange}
             placeholder="e.g. Xtina Lungu"
-            className="bg-background"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Your Email</Label>
+        <div className="space-y-3">
+          <Label htmlFor="email" className="text-base font-medium">Your Email</Label>
           <Input
             id="email"
             name="email"
@@ -95,13 +96,12 @@ export function ContactForm() {
             value={formData.email}
             onChange={handleChange}
             placeholder="you@example.com"
-            className="bg-background"
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="subject">Subject</Label>
+      <div className="space-y-3">
+        <Label htmlFor="subject" className="text-base font-medium">Subject</Label>
         <Input
           id="subject"
           name="subject"
@@ -110,12 +110,11 @@ export function ContactForm() {
           value={formData.subject}
           onChange={handleChange}
           placeholder="What's this about?"
-          className="bg-background"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="message">Your Message</Label>
+      <div className="space-y-3">
+        <Label htmlFor="message" className="text-base font-medium">Your Message</Label>
         <Textarea
           id="message"
           name="message"
@@ -124,7 +123,6 @@ export function ContactForm() {
           onChange={handleChange}
           placeholder="Write the message or question..."
           rows={6}
-          className="bg-background resize-none"
         />
       </div>
 

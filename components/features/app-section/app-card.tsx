@@ -65,10 +65,10 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
     // Featured large card style (Apple App Store hero style)
     return (
       <Card className={cn(
-        "overflow-hidden border-0 bg-gradient-to-br from-card to-card/80",
-        "hover:shadow-2xl transition-all duration-500 ease-out",
+        "overflow-hidden border-0 bg-gradient-to-br from-card/90 to-card/70",
+        "hover:shadow-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
         "group cursor-pointer",
-        "rounded-3xl"
+        "rounded-3xl backdrop-blur-sm"
       )}>
         <div className="relative">
           {/* App Image - Hero Style */}
@@ -152,11 +152,11 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
       onMouseLeave={handleMouseLeave}
     >
       <Card ref={cardRef} className={cn(
-      "overflow-hidden border-0 bg-card/50 backdrop-blur-sm",
-      "hover:shadow-2xl transition-all duration-500 ease-out",
+      "overflow-hidden border border-border/30 bg-card/60 backdrop-blur-sm",
+      "hover:shadow-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
       "group cursor-pointer",
       "rounded-2xl",
-      "hover:-translate-y-2",
+      "hover:-translate-y-1",
       "[transform-style:preserve-3d]"
     )}>
       {/* Dynamic light highlight following the cursor */}
@@ -191,20 +191,20 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
         )}
       </div>
 
-      <div className="p-5 sm:p-6 space-y-4">
+      <div className="p-6 sm:p-8 space-y-5">
         {/* Header */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h3 className="text-xl sm:text-2xl font-bold mb-1.5 group-hover:text-primary transition-colors duration-300 line-clamp-1">
+              <h3 className="text-xl sm:text-2xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-1 tracking-tight">
                 {title}
               </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground font-medium">{category}</p>
+              <p className="text-sm text-muted-foreground font-normal">{category}</p>
             </div>
             {tags[0] && (
               <Badge 
                 variant="outline" 
-                className="group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300 flex-shrink-0 text-xs rounded-full px-2.5 py-1"
+                className="group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30 transition-all duration-300 flex-shrink-0 text-xs rounded-full px-3 py-1.5 border-border/50"
               >
                 {tags[0]}
               </Badge>
@@ -212,15 +212,15 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
           </div>
           
           {downloads > 0 && (
-            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
-              <Download className="h-3.5 w-3.5" />
-              <span className="font-medium">{formatDownloads(downloads)} downloads</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Download className="h-4 w-4" />
+              <span className="font-normal">{formatDownloads(downloads)} downloads</span>
             </div>
           )}
         </div>
 
         {/* Description */}
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed line-clamp-2 min-h-[2.5rem]">
+        <p className="text-base text-muted-foreground leading-relaxed line-clamp-2 min-h-[3rem]">
           {description}
         </p>
 
@@ -231,7 +231,7 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
               <Badge 
                 key={index} 
                 variant="secondary" 
-                className="text-xs rounded-full px-2.5 py-1 bg-secondary/50"
+                className="text-xs rounded-full px-3 py-1.5 bg-secondary/30 border border-border/30"
               >
                 {tag}
               </Badge>
@@ -240,10 +240,10 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
         )}
 
         {/* Download Button */}
-        <div className="pt-2">
+        <div className="pt-3">
           <Button 
             onClick={handleDownload}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 rounded-xl h-10 sm:h-11 font-semibold text-sm sm:text-base group/btn shadow-lg hover:shadow-xl"
+            className="w-full font-medium text-base group/btn"
           >
             Get
             <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
