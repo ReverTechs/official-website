@@ -125,18 +125,18 @@ export function Testimonials({ items = DEFAULT_TESTIMONIALS }: { items?: Testimo
                   i === index ? "opacity-100" : "opacity-0 absolute inset-0"
                 )}
               >
-                <blockquote className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight tracking-tight text-balance">
+                <blockquote className="text-xl sm:text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-balance">
                   "{t.quote}"
                 </blockquote>
-                <figcaption className="mt-8 sm:mt-10 flex items-center gap-4 sm:gap-5">
+                <figcaption className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-4">
                   {t.avatar && (
-                    <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full overflow-hidden ring-2 ring-border/30 shadow-sm">
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden ring-2 ring-border/30 shadow-sm">
                       <Image src={t.avatar} alt={t.author} fill className="object-cover" />
                     </div>
                   )}
                   <div>
-                    <div className="text-base sm:text-lg font-semibold tracking-tight">{t.author}</div>
-                    <div className="text-sm sm:text-base text-muted-foreground">{t.role}</div>
+                    <div className="text-sm sm:text-base font-semibold tracking-tight">{t.author}</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">{t.role}</div>
                   </div>
                 </figcaption>
               </figure>

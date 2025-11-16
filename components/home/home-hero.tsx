@@ -73,13 +73,13 @@ export async function HomeHero() {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center pt-4">
             <a
               href="#about"
-              className="w-full sm:w-auto px-8 py-3.5 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md text-base"
+              className="w-full sm:w-auto px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md text-sm"
             >
               Learn More
             </a>
             <a
               href="#apps"
-              className="w-full sm:w-auto px-8 py-3.5 border border-border/50 bg-background/50 backdrop-blur-sm text-foreground rounded-full font-medium hover:bg-accent/50 hover:border-border transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md text-base"
+              className="w-full sm:w-auto px-6 py-2.5 border border-border/50 bg-background/50 backdrop-blur-sm text-foreground rounded-full font-medium hover:bg-accent/50 hover:border-border transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md text-sm"
             >
               View My Apps
             </a>

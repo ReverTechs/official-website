@@ -48,7 +48,7 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-8", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Login</CardTitle>
@@ -58,9 +58,9 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email" className="text-base font-medium">Email</Label>
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -70,9 +70,9 @@ export function LoginForm({
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password" className="text-base font-medium">Password</Label>
+                  <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
                     className="ml-auto inline-block text-sm text-primary underline-offset-4 hover:underline transition-colors"
@@ -93,7 +93,7 @@ export function LoginForm({
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>
-            <div className="mt-6 text-center text-base text-muted-foreground">
+            <div className="mt-4 text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/sign-up"

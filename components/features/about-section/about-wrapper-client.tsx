@@ -40,21 +40,21 @@ export function AboutWrapperClient({ description, skills, tools = [], yearsOfExp
             </div>
 
             {/* Description Card */}
-            <div className="flex-1 bg-card/60 backdrop-blur-sm border border-border/40 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm hover:shadow-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed whitespace-pre-line">
+            <div className="flex-1 bg-card/60 backdrop-blur-sm border border-border/40 rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                 {description}
               </p>
               
               {/* Years of Experience */}
               {yearsOfExperience && (
-                <div className="mt-8 pt-8 border-t border-border/40">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/30 flex items-center justify-center shadow-sm">
-                      <span className="text-2xl sm:text-3xl font-semibold text-primary tracking-tight">{yearsOfExperience}+</span>
+                <div className="mt-6 pt-6 border-t border-border/40">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/30 flex items-center justify-center shadow-sm">
+                      <span className="text-xl sm:text-2xl font-semibold text-primary tracking-tight">{yearsOfExperience}+</span>
                     </div>
                     <div>
-                      <p className="text-base sm:text-lg font-semibold tracking-tight">Years of Experience</p>
-                      <p className="text-sm sm:text-base text-muted-foreground">Building amazing solutions</p>
+                      <p className="text-sm sm:text-base font-semibold tracking-tight">Years of Experience</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Building amazing solutions</p>
                     </div>
                   </div>
                 </div>

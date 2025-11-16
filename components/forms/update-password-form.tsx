@@ -43,7 +43,7 @@ export function UpdatePasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-8", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Reset Your Password</CardTitle>
@@ -53,9 +53,9 @@ export function UpdatePasswordForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleForgotPassword}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="password" className="text-base font-medium">New password</Label>
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="password">New password</Label>
                 <Input
                   id="password"
                   type="password"

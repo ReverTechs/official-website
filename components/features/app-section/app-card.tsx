@@ -220,7 +220,7 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground leading-relaxed line-clamp-2 min-h-[3rem]">
+        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 min-h-[2.5rem]">
           {description}
         </p>
 
@@ -243,7 +243,7 @@ export function AppCard({ title, description, category, downloadLink, tags, id, 
         <div className="pt-3">
           <Button 
             onClick={handleDownload}
-            className="w-full font-medium text-base group/btn"
+            className="w-full group/btn"
           >
             Get
             <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />

@@ -67,7 +67,7 @@ export function SignUpForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-8", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Sign up</CardTitle>
@@ -75,9 +75,9 @@ export function SignUpForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email" className="text-base font-medium">Email</Label>
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -87,9 +87,9 @@ export function SignUpForm({
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password" className="text-base font-medium">Password</Label>
+                  <Label htmlFor="password">Password</Label>
                 </div>
                 <Input
                   id="password"
@@ -99,9 +99,9 @@ export function SignUpForm({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="repeat-password" className="text-base font-medium">Repeat Password</Label>
+                  <Label htmlFor="repeat-password">Repeat Password</Label>
                 </div>
                 <Input
                   id="repeat-password"
@@ -116,7 +116,7 @@ export function SignUpForm({
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>
-            <div className="mt-6 text-center text-base text-muted-foreground">
+            <div className="mt-4 text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link href="/auth/login" className="text-primary underline-offset-4 hover:underline font-medium transition-colors">
                 Login
