@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/supabase/server";
 import { AdminNavbar } from "@/components/features/admin/admin-navbar";
+import { AdminNavProgress } from "@/components/features/admin/admin-nav-progress";
 
 export default async function AdminLayout({
   children,
@@ -8,7 +9,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const { supabase, user } = await ensureUserProfile();
-  
+
   if (!user) {
     redirect("/auth/login");
   }
@@ -27,12 +28,10 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-background">
       <AdminNavbar />
+      <AdminNavProgress />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {children}
       </div>
     </div>
   );
 }
-
-
-

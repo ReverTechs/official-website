@@ -43,7 +43,7 @@ export async function HomeHero() {
         <div className="mb-8 sm:mb-12 animate-fade-in flex justify-center">
           <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden ring-4 ring-primary/20 ring-offset-4 ring-offset-background shadow-2xl bg-gradient-to-br from-primary/30 to-secondary/30">
             <Image
-              src="/images/profile.jpg"
+              src="/images/rever-2.jpg"
               alt="Blessings Chilemba"
               fill
               className="object-cover"
